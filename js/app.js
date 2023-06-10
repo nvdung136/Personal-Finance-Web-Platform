@@ -26,7 +26,6 @@ app.post("/postNew", (req,res) => {
         console.log({date, amount, purpose, account, categorized});
         sql = "INSERT INTO TransactionTable(date,amount,purpose,account,categorized) VALUES (?,?,?,?,?)";
         db.run(sql, [date, amount, purpose, account, categorized], (err) => {
-            console.log(sql,[date, amount, purpose, account, categorized])
             if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
             return res.json({status: 200,success: true,});
             });
@@ -39,9 +38,23 @@ app.post("/postNew", (req,res) => {
     }
  });
 
+app.post("/fperiod", (req,res)=> {
+    try{
+        var ReqDa = req.body;
+        fperiod = ReqDa.FPeriod;
+        return res.json({status: 200, success: true,});
+        }
+    catch (error){
+        return res.json({
+            status: 400,
+            success: false,
+        });
+    }
+})
+
 //get request
 app.get("/fetch", (req,res) => {
-    sql = "SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '2023-05' ORDER by date(Date)";
+    sql = `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`;
     try {
         db.all(sql,(err,rows) =>{
             if(err) return res.json({status: 300, success: false ,error: err});
