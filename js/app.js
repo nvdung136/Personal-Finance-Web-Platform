@@ -20,15 +20,16 @@ app.use((req, res, next) => {
 
 //post request
 app.post("/postNew", (req,res) => {
+    const RecordData = req.body;
     try {
-        const {date, amount, purpose, account, categorized} = req.body;
-        console.log(req.body);
-        console.log({date, amount, purpose, account, categorized});
-        sql = "INSERT INTO TransactionTable(date,amount,purpose,account,categorized) VALUES (?,?,?,?,?)";
-        db.run(sql, [date, amount, purpose, account, categorized], (err) => {
-            if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
+        for (let i = 0; i < RecordData.length;i++)
+            {
+                const {date, amount, purpose, account, categorized} = RecordData[i];
+                sql = "INSERT INTO TransactionTable(date,amount,purpose,account,categorized) VALUES (?,?,?,?,?)";
+                db.run(sql, [date, amount, purpose, account, categorized], (err) => {
+                if(err) return res.json({status: 300, success: false ,error: err, data:req.body});});
+            }
             return res.json({status: 200,success: true,});
-            });
         } 
     catch (error){
         return res.json({
@@ -54,7 +55,12 @@ app.post("/fperiod", (req,res)=> {
 
 //get request
 app.get("/fetch", (req,res) => {
-    sql = `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`;
+    if(fperiod == null) return res.json({
+        status: 400,
+        success: false,
+        reason: `Not specified month`,
+    });
+    else sql = `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`;
     try {
         db.all(sql,(err,rows) =>{
             if(err) return res.json({status: 300, success: false ,error: err});

@@ -81,16 +81,16 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <input type="month" id="FPeriod" min="2023-05" onchange="ChangePeriod()"></input> 
       <button class="w3-button w3-padding-16" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
     </div> 
-    <div id="TBLFrame" style="overflow: auto; max-height: 500px; width: 100%;">
+    <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
       <table class="w3-table-all w3-light-grey w3-padding-16" id="Transac_TB">
         <thead>    
           <tr>
-            <th style="width:7%">ID</th>
             <th style="width:15%">Date</th>
-            <th style="width:8%">Amount</th>
-            <th style="width:55%">Transaction</th>
+            <th style="width:10%">Amount</th>
+            <th style="width:60%">Transaction</th>
             <th style="width:8%">Account</th>
             <th style="width:7%">C-Code</th>
+            <!-- <th style="width:7%"></th> -->
           </tr>
         </thead>
         <tbody id = "tableContent" >
@@ -155,8 +155,14 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </div>
 
 <script>
-var RecordsList = [];
+let maxD;
+let Update_Ele;
 
+var RecordsList = [];
+var Udate_List = [];
+var FPeriod = document.getElementById("FPeriod").value;
+
+const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
 const Date_chose = document.getElementById("in_Date");
 // Get the Sidebar
@@ -186,7 +192,7 @@ function daysInMonth (month, year) {
 }
 
 function ChangePeriod(){
-  var FPeriod = document.getElementById("FPeriod").value;
+  FPeriod = document.getElementById("FPeriod").value;
   var Fbody = {FPeriod};
   var Pre_setD = FPeriod + '-01';
   var Fmonth = FPeriod.slice(5);
@@ -195,12 +201,13 @@ function ChangePeriod(){
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
   body: JSON.stringify(Fbody),  
-  };
+};
   fetch('http://localhost:3000/fperiod',option).then(res => {return res.json()})
   .then(data => {console.log(data)});
   Date_chose.value = Pre_setD;
   Date_chose.min = Pre_setD;
-  Date_chose.max = FPeriod + `-${daysInMonth(Fmonth,Fyear)}`;  
+  maxD = daysInMonth(Fmonth,Fyear);
+  Date_chose.max = FPeriod + `-${maxD}`;  
 }
 
 function Fetch_data() {
@@ -216,19 +223,26 @@ function Fetch_data() {
     if(objectData.status == 200) {
       let tableData = "";
       objectData.data.map((values) =>
-      { tableData +=`<tr><td>${values.ID}</td><td>${values.Date}</td><td>${values.Amount}</td><td>${values.Purpose}</td><td>${values.Account}</td><td>${values.Categorized}</td><tr>`;})
-      document.getElementById("tableContent").innerHTML = tableData;}  
+      { tableData +=`<tr id="Row_${values.ID}">
+        <td ondblclick="TBLcell_click(${values.ID},'Date')"><div class="row_data"  id="Date_${values.ID}">${values.Date}</div></td>
+        <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data"  id="Amt_${values.ID}">${values.Amount}</div></td>
+        <td ondblclick="TBLcell_click(${values.ID},'For')"><div class="row_data" id="For_${values.ID}">${values.Purpose}</div></td>
+        <td ondblclick="TBLcell_click(${values.ID},'Acc')"><div class="row_data" id="Acc_${values.ID}">${values.Account}</div></td>
+        <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td></tr>`})
+        // <td><div class="row_data" ondblclick="TBLcell_click(${values.ID},'Reserved')></div></td><tr>`
+      TBLContain.innerHTML = tableData;}  
     else if (objectData.status == 300) {
-      document.getElementById("tableContent").innerHTML = '';
+      TBLContain.innerHTML = '';
       alert('No records to show');
     }});  
-  document.getElementById("TBLFrame").scrollTo(0,document.getElementById("tableContent").offsetHeight);
+  // console.log(document.getElementsByClassName("row_data"));
+  document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 
 //Temporary submit newlines to the table
 function SubmitLine() {
   var ThisList = {};
-  var tableData = document.getElementById("tableContent").innerHTML;
+  var tableData = TBLContain.innerHTML;
   var date = document.getElementById("in_Date").value;
   var amount = document.getElementById("in_Amount").value;
   var purpose = document.getElementById("in_Purpose").value;
@@ -236,37 +250,97 @@ function SubmitLine() {
   var categorized = document.getElementById("in_CCode").value;
   var ThisList = {date,amount,purpose,account,categorized};
   tableData += `<tr class="w3-indigo">
-    <td>unf</td>
     <td>${date}</td>
     <td>${amount}</td>
     <td>${purpose}</td>
     <td>${account}</td>
     <td>${categorized}</td> 
     <tr>`;
+  console.log(ThisList);
   RecordsList.push(ThisList);
   Date_chose.focus();
-  document.getElementById("tableContent").innerHTML = tableData;
-  document.getElementById("TBLFrame").scrollTo(0,document.getElementById("tableContent").offsetHeight);
-  
+  TBLContain.innerHTML = tableData;
+  document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 
 //Save all lthe newlines onto the database
-function SaveNew() {  
-  for (let i = 0; i < RecordsList.length; i++) {
-  console.log(JSON.stringify(RecordsList[i]));
+async function SaveNew() {  
   var option = {
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
-  body: JSON.stringify(RecordsList[i]),  
+  body: JSON.stringify(RecordsList),  
   };
-  fetch('http://localhost:3000/postNew',option)
+  await fetch('http://localhost:3000/postNew',option)
   .then(res => {return res.json()})
-  .then(data => {if(data.success == false) return alert(`Save operation failed at ${JSON.stringify(RecordsList[i])}`)});
-  }
+  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All records saved`);});
   RecordsList = [];
-  Fetch_data();
-  return alert(`All records saved`);
+  Fetch_data(); 
+}
+
+function TBLcell_click(RowID, Content){
+  const SelectRow = document.getElementById(`Row_${RowID}`);
+  const idt = `${Content}_${RowID}`;
+  const selectDiv = document.getElementById(idt);
+  const DefaultVal = selectDiv.innerHTML;
+  // selectDiv.setAttribute("contenteditable",'true');
+  SelectRow.classList.add("w3-khaki");
+  switch(Content){
+    case ('Date'):
+      selectDiv.innerHTML = `<Input type="date" id="${idt}_UDate"></Input>`;
+      Update_Ele = document.getElementById(`${idt}_UDate`); 
+      Update_Ele.max = FPeriod + '-'+maxD; 
+      Update_Ele.min = FPeriod + '-01';
+      break;
+      case ('Amt'):
+      selectDiv.innerHTML = `<Input type="number" id="${idt}_UDate"></Input>`;
+      Update_Ele  = document.getElementById(`${idt}_UDate`);
+      break;
+      case ('Acc'):
+      selectDiv.innerHTML = `<select id="${idt}_UDate"><option value="TCB">TCB</option><option value="BID">BID</option></select>`;
+      Update_Ele = document.getElementById(`${idt}_UDate`); 
+      break;
+      case ('CCode'):
+      selectDiv.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`;
+      Update_Ele = document.getElementById(`${idt}_UDate`); 
+      break;  
+    case ('For'):
+      selectDiv.innerHTML = `<Input type="text" id="${idt}_UDate"></Input>`;
+      Update_Ele = document.getElementById(`${idt}_UDate`); 
+  }
+  Update_Ele.value = DefaultVal;
+  Update_Ele.focus();
+  Update_Ele.setAttribute('onfocusout',`Udate_Row(${RowID},'${Content}','${DefaultVal}')`);
+}
+
+function Udate_Row(ID, Content, DefaultVal){
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  SelectRow.classList.remove("w3-khaki");
+  const idt = `${Content}_${ID}`;
+  const selectDiv = document.getElementById(idt);
+  const NewVal = Update_Ele.value;
+  selectDiv.innerHTML = Update_Ele.value;
+  if (DefaultVal == NewVal) return;
   
+  SelectRow.classList.add("w3-light-green");
+  var UpdateObj = {}
+  UpdateObj.ID = ID;
+  for(let i = 0; i< Udate_List.length; i++)
+  {
+    if (Udate_List[i].ID == ID) 
+    {
+      UpdateObj = Udate_List[i];
+      Udate_List.splice(i,1);
+      break;
+    }
+  } 
+  switch(Content){
+    case ('Date'): UpdateObj.date = Update_Ele.value; break;
+    case ('Amt'): UpdateObj.amount = Update_Ele.value; break;
+    case ('Acc'): UpdateObj.account = Update_Ele.value; break;
+    case ('CCode'):UpdateObj.categorized = Update_Ele.value; break;
+    case ('For'): UpdateObj.purpose = Update_Ele.value; break;
+  }
+  Udate_List.push(UpdateObj);
 }
 
 var P_enter = document.getElementById("input_Tb");
@@ -276,12 +350,14 @@ P_enter.addEventListener("keypress", function(event) {
     document.getElementById("Submit_B").click();
   }
 });
+
 P_enter.addEventListener("keydown", function(event){
   if (event.shiftKey && event.key === 'Enter'){
     event.preventDefault();
     document.getElementById("Save_B").click();
   }
 })
+
 </script>
 
 </body>
