@@ -85,11 +85,11 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <table class="w3-table-all w3-light-grey w3-padding-16" id="Transac_TB">
         <thead>    
           <tr>
-            <th style="width:15%">Date</th>
-            <th style="width:10%">Amount</th>
+            <th style="width:15% ; min-width:107px">Date</th>
+            <th style="width:10%; min-width:72px">Amount</th>
             <th style="width:60%">Transaction</th>
             <th style="width:8%">Account</th>
-            <th style="width:7%">C-Code</th>
+            <th style="width:7%;min-width:72px">C-Code</th>
             <!-- <th style="width:7%"></th> -->
           </tr>
         </thead>
@@ -105,7 +105,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <table class="w3-table-all">
       <thead>
         <th style="width:15%">Date</th>
-        <th style="width:10%">Amount</th>
+        <th style="width:10% ">Amount</th>
         <th style="width:60%">Transaction</th>
         <th style="width:8%">Account</th>
         <th style="width:7%">C-Code</th>
@@ -142,7 +142,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </form>
     <div>
       <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
-      <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button>
+      <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
+      <!-- change for SaveNew() test -->
     </div>  
   </div>
   <hr>
@@ -264,17 +265,31 @@ function SubmitLine() {
 }
 
 //Save all lthe newlines onto the database
-async function SaveNew() {  
-  var option = {
+function SaveNew() { 
+    if(RecordsList.length) 
+    {
+      var option = {
+      method: 'POST',
+      headers:{'Content-Type':'application/json'}, 
+      body: JSON.stringify(RecordsList),  
+      };
+      fetch('http://localhost:3000/postNew',option)
+      .then(res => {return res.json()})
+      .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All new records saved`);});
+      RecordsList = []; 
+    }
+    if (Udate_List.length) Update();
+}
+
+function Update() {  
+  var optionU = {
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
-  body: JSON.stringify(RecordsList),  
-  };
-  await fetch('http://localhost:3000/postNew',option)
+  body: JSON.stringify(Udate_List),};
+  fetch('http://localhost:3000/update',optionU)
   .then(res => {return res.json()})
-  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All records saved`);});
-  RecordsList = [];
-  Fetch_data(); 
+  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All update records saved`);});
+  Udate_List = [];
 }
 
 function TBLcell_click(RowID, Content){
@@ -303,9 +318,10 @@ function TBLcell_click(RowID, Content){
       selectDiv.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`;
       Update_Ele = document.getElementById(`${idt}_UDate`); 
       break;  
-    case ('For'):
-      selectDiv.innerHTML = `<Input type="text" id="${idt}_UDate"></Input>`;
+      case ('For'):
+      selectDiv.innerHTML = `<Input type="text" style="width:100%;" id="${idt}_UDate"></Input>`;
       Update_Ele = document.getElementById(`${idt}_UDate`); 
+      break;
   }
   Update_Ele.value = DefaultVal;
   Update_Ele.focus();

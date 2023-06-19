@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     next();
   })
 
-//post request
+//post new request
 app.post("/postNew", (req,res) => {
     const RecordData = req.body;
     try {
@@ -39,6 +39,40 @@ app.post("/postNew", (req,res) => {
     }
  });
 
+ //post update request 
+ app.post("/update", (req,res)=> {
+    const updateData = req.body;
+    var baseSQL = "UPDATE TransactionTable SET"
+    try{
+        for (let i = 0; i< updateData.length; i++)
+            {
+                var ID = ``;
+                var SQLline = ``;
+                var SQLcond = ``;
+                for (const key in updateData[i]){   
+                    switch (key){
+                        case ('ID'): 
+                        SQLcond = ` WHERE ID = ${updateData[i][key]}`;
+                        break;
+                        case ('amount'): 
+                        SQLline += ` ${key} = ${updateData[i][key]},`;
+                        break;
+                        default:
+                        SQLline += ` ${key} = '${updateData[i][key]}',`;
+                    }}
+                SQLline = SQLline.slice(0,-1);
+                sql = baseSQL + SQLline + SQLcond;
+                db.run(sql, (err) => {if(err) return res.json({status: 300, success: false ,error: err, data:req.body});});
+            }
+            return res.json({status: 200,success: true,});}
+    catch{
+        return res.json({
+            status: 400,
+            success: false,
+        });}
+ });
+
+//post new change period - should change later on (to - endix of URL from fetch request)
 app.post("/fperiod", (req,res)=> {
     try{
         var ReqDa = req.body;
@@ -55,7 +89,7 @@ app.post("/fperiod", (req,res)=> {
 
 //get request
 app.get("/fetch", (req,res) => {
-    if(fperiod == null) return res.json({
+    if(!fperiod) return res.json({
         status: 400,
         success: false,
         reason: `Not specified month`,
