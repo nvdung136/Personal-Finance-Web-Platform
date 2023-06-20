@@ -62,14 +62,17 @@ app.post("/postNew", (req,res) => {
                     }}
                 SQLline = SQLline.slice(0,-1);
                 sql = baseSQL + SQLline + SQLcond;
-                db.run(sql, (err) => {if(err) return res.json({status: 300, success: false ,error: err, data:req.body});});
+                db.run(sql, (err) => {
+                    if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
+                });
             }
-            return res.json({status: 200,success: true,});}
-    catch{
-        return res.json({
-            status: 400,
-            success: false,
-        });}
+            return res.json({status: 200,success: true,});
+        }
+    catch (error) {
+                return res.json({
+                    status: 400,
+                    success: false,});
+            }
  });
 
 //post new change period - should change later on (to - endix of URL from fetch request)
@@ -85,7 +88,27 @@ app.post("/fperiod", (req,res)=> {
             success: false,
         });
     }
-})
+});
+
+app.post("/delete", (req,res) => {
+    const Del_list = req.body;
+    try
+    {
+        for(let i = 0; i<Del_list.length; i++)
+        {
+            sql = `DELETE FROM TransactionTable WHERE ID = ${Del_list[i]}`; 
+            db.run(sql, (err) => {
+                if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
+            });
+        }
+        return res.json({status: 200,success: true,});
+    }
+    catch (error) {
+        return res.json({
+            status: 400,
+            success: false,});
+        }
+});
 
 //get request
 app.get("/fetch", (req,res) => {

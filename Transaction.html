@@ -85,11 +85,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <table class="w3-table-all w3-light-grey w3-padding-16" id="Transac_TB">
         <thead>    
           <tr>
-            <th style="width:15% ; min-width:107px">Date</th>
-            <th style="width:10%; min-width:72px">Amount</th>
-            <th style="width:60%">Transaction</th>
+            <th style="width:15%;min-width:107px">Date</th>
+            <th style="width:10%;min-width:72px">Amount</th>
+            <th style="width:57%">Transaction</th>
             <th style="width:8%">Account</th>
             <th style="width:7%;min-width:72px">C-Code</th>
+            <th style="width:3%;min-width:30px;"></th>
             <!-- <th style="width:7%"></th> -->
           </tr>
         </thead>
@@ -143,6 +144,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <div>
       <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
       <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
+      <button class="w3-button w3-orange w3-right" id="Delete_B" onclick="Delete_rec()"> Delete </button>
       <!-- change for SaveNew() test -->
     </div>  
   </div>
@@ -161,6 +163,7 @@ let Update_Ele;
 
 var RecordsList = [];
 var Udate_List = [];
+var Del_list =[];
 var FPeriod = document.getElementById("FPeriod").value;
 
 const TBLContain = document.getElementById('tableContent')
@@ -229,7 +232,9 @@ function Fetch_data() {
         <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data"  id="Amt_${values.ID}">${values.Amount}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'For')"><div class="row_data" id="For_${values.ID}">${values.Purpose}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'Acc')"><div class="row_data" id="Acc_${values.ID}">${values.Account}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td></tr>`})
+        <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td>
+        <td ondblclick="Delete_CheckB(${values.ID})"><div id="Del_${values.ID}"></div></td>
+        </tr>`})
         // <td><div class="row_data" ondblclick="TBLcell_click(${values.ID},'Reserved')></div></td><tr>`
       TBLContain.innerHTML = tableData;}  
     else if (objectData.status == 300) {
@@ -280,6 +285,41 @@ function SaveNew() {
     }
     if (Udate_List.length) Update();
 }
+
+function Delete_CheckB(ID){
+  const deleteB = document.getElementById(`Del_${ID}`);
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  deleteB.innerHTML = `<input onclick="Delete_List(${ID})" ID="DelBox_${ID}" type="checkbox" checked="true"></input>`;
+  SelectRow.classList.add('w3-orange');
+  if(!Del_list.includes(ID)) Del_list.push(ID);
+}
+
+function Delete_List(ID)
+{
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  const deleteB = document.getElementById(`Del_${ID}`);
+  const Del_CB = document.getElementById(`DelBox_${ID}`);
+  if(!Del_CB.checked) 
+  {
+    SelectRow.classList.remove('w3-orange'); 
+    Del_list.splice(Del_list.indexOf(ID),1); 
+    deleteB.innerHTML =``;
+  }
+}
+
+function Delete_rec(){
+  if (!Del_list.length) return;
+  var optionD = {
+  method: 'POST',
+  headers:{'Content-Type':'application/json'}, 
+  body: JSON.stringify(Del_list),};
+  fetch('http://localhost:3000/delete',optionD)
+  .then(res => {return res.json()})
+  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All selected records deleted`);});
+  Del_list = [];
+}
+
+
 
 function Update() {  
   var optionU = {
