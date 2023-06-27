@@ -1,11 +1,14 @@
 let maxD;
 let Update_Ele;
 
+var FirstLoad = true;
 var RecordsList = [];
 var Udate_List = [];
 var Del_list =[];
 var FPeriod = document.getElementById("FPeriod").value;
+let Rmder_Amount = {month: 0 ,total: 0 }
 
+const Rmder = document.getElementById("Remaining_Amt");
 const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
 const Date_chose = document.getElementById("in_Date");
@@ -16,6 +19,7 @@ var mySidebar = document.getElementById("mySidebar");
 var overlayBg = document.getElementById("myOverlay");
 
 // Toggle between showing and hiding the sidebar, and add overlay effect
+
 function w3_open() {
   if (mySidebar.style.display === 'block') {
     mySidebar.style.display = 'none';
@@ -37,51 +41,62 @@ function daysInMonth (month, year) {
 
 function ChangePeriod(){
   FPeriod = document.getElementById("FPeriod").value;
-  var Fbody = {FPeriod};
   var Pre_setD = FPeriod + '-01';
   var Fmonth = FPeriod.slice(5);
   var Fyear = FPeriod.slice(0,4);
-  var option = {
-  method: 'POST',
-  headers:{'Content-Type':'application/json'}, 
-  body: JSON.stringify(Fbody),  
-};
-  fetch('http://localhost:3000/fperiod',option).then(res => {return res.json()})
-  .then(data => {console.log(data)});
   Date_chose.value = Pre_setD;
   Date_chose.min = Pre_setD;
   maxD = daysInMonth(Fmonth,Fyear);
   Date_chose.max = FPeriod + `-${maxD}`;  
 }
 
-function Fetch_data() {
+async function Fetch_data() {
+  if(FirstLoad)
+  {
+    const date = new Date();
+    const month = ((date.getMonth()+1)<10) ? `0${date.getMonth()+1}` : `${date.getMonth()+1}`;  
+    const year =  date.getFullYear();
+    FPeriod = `${year}-${month}`;
+    document.getElementById("FPeriod").value = FPeriod;
+    Date_chose.min = Date_chose.value = FPeriod + '-01';
+    maxD = daysInMonth(month,year);
+    Date_chose.max = FPeriod + `-${maxD}`;  
+    FirstLoad = false;
+  }
   var option = {
   method: 'GET',
   headers:{'Content-Type':'application/json'}, 
   };
-  fetch('http://localhost:3000/fetch',option)
+  const URL = `http://localhost:3000/fetch/${FPeriod}`;
+  fetch(URL,option)
   .then(res => {return res.json()})
   .then(objectData =>
   { 
-    console.log(objectData)
     if(objectData.status == 200) {
+      Rmder_Amount.month = objectData.month[0].period;
+      Rmder_Amount.total = objectData.total[0].total;
+      if(Btt_Mth_Total == "Month") Rmder.textContent = Rmder_Amount.month;
+      else Rmder.textContent = Rmder_Amount.total;
       let tableData = "";
-      objectData.data.map((values) =>
-      { tableData +=`<tr id="Row_${values.ID}">
+      objectData.data.map((values) => {
+        tableData += `<tr id="Row_${values.ID}">
         <td ondblclick="TBLcell_click(${values.ID},'Date')"><div class="row_data"  id="Date_${values.ID}">${values.Date}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data"  id="Amt_${values.ID}">${values.Amount}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'For')"><div class="row_data" id="For_${values.ID}">${values.Purpose}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'Acc')"><div class="row_data" id="Acc_${values.ID}">${values.Account}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td>
         <td ondblclick="Delete_CheckB(${values.ID})"><div id="Del_${values.ID}"></div></td>
-        </tr>`})
-        // <td><div class="row_data" ondblclick="TBLcell_click(${values.ID},'Reserved')></div></td><tr>`
-      TBLContain.innerHTML = tableData;}  
-    else if (objectData.status == 300) {
+        </tr>`
+      // <td><div class="row_data" ondblclick="TBLcell_click(${values.ID},'Reserved')></div></td><tr>`
+      TBLContain.innerHTML = tableData;});
+    }
+      else if (objectData.status == 300) {
+      Rmder_Amount.month = 0;
+      Rmder_Amount.total = 0;
+      Rmder.textContent = 0;
       TBLContain.innerHTML = '';
       alert('No records to show');
     }});  
-  // console.log(document.getElementsByClassName("row_data"));
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 
@@ -239,7 +254,7 @@ function Udate_Row(ID, Content, DefaultVal){
   Udate_List.push(UpdateObj);
 }
 
-var P_enter = document.getElementById("input_Tb");
+const P_enter = document.getElementById("input_Tb");
 P_enter.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -254,3 +269,16 @@ P_enter.addEventListener("keydown", function(event){
   }
 })
 
+const Btt_Mth_Total = document.getElementById("AmtRem_ByMth")
+Btt_Mth_Total.addEventListener("click", function(){
+  if(Btt_Mth_Total.textContent == "Total") 
+  {
+    Rmder.textContent = Rmder_Amount.month;
+    Btt_Mth_Total.textContent = "Month";
+  }
+  else
+  {
+    Rmder.textContent = Rmder_Amount.total;
+    Btt_Mth_Total.textContent = "Total"
+  }
+});

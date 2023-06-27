@@ -4,6 +4,7 @@ const app = express();
 let sql;
 const url = require('url');
 const { error } = require('console');
+const { promises } = require('dns');
 const sqlite = require('sqlite3').verbose();
 const db = new sqlite.Database('../DB/PersonalFinance.db',sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err);
@@ -75,21 +76,6 @@ app.post("/postNew", (req,res) => {
             }
  });
 
-//post new change period - should change later on (to - endix of URL from fetch request)
-app.post("/fperiod", (req,res)=> {
-    try{
-        var ReqDa = req.body;
-        fperiod = ReqDa.FPeriod;
-        return res.json({status: 200, success: true,});
-        }
-    catch (error){
-        return res.json({
-            status: 400,
-            success: false,
-        });
-    }
-});
-
 app.post("/delete", (req,res) => {
     const Del_list = req.body;
     try
@@ -111,22 +97,25 @@ app.post("/delete", (req,res) => {
 });
 
 //get request
-app.get("/fetch", (req,res) => {
-    if(!fperiod) return res.json({
-        status: 400,
-        success: false,
-        reason: `Not specified month`,
-    });
-    else sql = `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`;
+app.get("/fetch/:period", async (req,res) => {
+    fperiod = req.params.period;
+    sql = [ `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`,
+            `SELECT SUM(Amount) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,
+            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`]
     try {
-        db.all(sql,(err,rows) =>{
-            if(err) return res.json({status: 300, success: false ,error: err});
-
-            if(rows.length<1) return res.json({ status:300, success: false, error:"No match"});
-
-            return res.json({status: 200, data:rows, success: true})
+        const Rdata = await QueryIt(sql[0]);
+        const Total_Rmder = await QueryIt(sql[1]);
+        const Month_Rmder = await QueryIt(sql[2]);
+        if(Rdata.length<1)  return res.json({status: 300, success: false}); 
+        return res.json({
+            status: 200,
+            success: true,
+            data:Rdata,
+            total:Total_Rmder,
+            month:Month_Rmder,
         });
     }
+
     catch (error){
         return res.json({
             status: 400,
@@ -134,4 +123,13 @@ app.get("/fetch", (req,res) => {
         });
     }
 });
+
+function QueryIt (Queryline){
+    return new Promise((resolve,reject)=> {
+        db.all(Queryline,(err,rows) =>{
+            if(err) reject(err);
+            else resolve(rows);
+        })
+    })
+}
 app.listen(3000);
