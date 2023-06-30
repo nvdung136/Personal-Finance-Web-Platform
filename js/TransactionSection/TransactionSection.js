@@ -19,7 +19,6 @@ var mySidebar = document.getElementById("mySidebar");
 var overlayBg = document.getElementById("myOverlay");
 
 // Toggle between showing and hiding the sidebar, and add overlay effect
-
 function w3_open() {
   if (mySidebar.style.display === 'block') {
     mySidebar.style.display = 'none';
@@ -75,7 +74,7 @@ async function Fetch_data() {
     if(objectData.status == 200) {
       Rmder_Amount.month = objectData.month[0].period;
       Rmder_Amount.total = objectData.total[0].total;
-      if(Btt_Mth_Total == "Month") Rmder.textContent = Rmder_Amount.month;
+      if(Btt_Mth_Total.textContent == "Month") Rmder.textContent = Rmder_Amount.month;
       else Rmder.textContent = Rmder_Amount.total;
       let tableData = "";
       objectData.data.map((values) => {
