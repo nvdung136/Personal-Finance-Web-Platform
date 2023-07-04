@@ -43,10 +43,11 @@ app.post("/postNew", (req,res) => {
  //post update request 
  app.post("/update", (req,res)=> {
     const updateData = req.body;
-    const baseSQL = "UPDATE TransactionTable SET";
+    var baseSQL = "UPDATE TransactionTable SET"
     try{
         for (let i = 0; i< updateData.length; i++)
             {
+                var ID = ``;
                 var SQLline = ``;
                 var SQLcond = ``;
                 for (const key in updateData[i]){   
@@ -100,7 +101,7 @@ app.get("/fetch/:period", async (req,res) => {
     fperiod = req.params.period;
     sql = [ `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`,
             `SELECT SUM(Amount) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,
-            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`];
+            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`]
     try {
         const Rdata = await QueryIt(sql[0]);
         const Total_Rmder = await QueryIt(sql[1]);
