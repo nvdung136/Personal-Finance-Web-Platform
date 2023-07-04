@@ -75,8 +75,6 @@ async function Fetch_data() {
     if(objectData.status == 200) {
       Rmder_Amount.month = objectData.month[0].period;
       Rmder_Amount.total = objectData.total[0].total;
-      if(Btt_Mth_Total == "Month") Rmder.textContent = Rmder_Amount.month;
-      else Rmder.textContent = Rmder_Amount.total;
       let tableData = "";
       objectData.data.map((values) => {
         tableData += `<tr id="Row_${values.ID}">
@@ -92,11 +90,13 @@ async function Fetch_data() {
     }
       else if (objectData.status == 300) {
       Rmder_Amount.month = 0;
-      Rmder_Amount.total = 0;
-      Rmder.textContent = 0;
+      Rmder_Amount.total = objectData.total[0].total;
       TBLContain.innerHTML = '';
       alert('No records to show');
-    }});  
+    }
+    if(Btt_Mth_Total == "Month") Rmder.textContent = Rmder_Amount.month;
+    else Rmder.textContent = Rmder_Amount.total;
+  });  
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 

@@ -106,7 +106,7 @@ app.get("/fetch/:period", async (req,res) => {
         const Rdata = await QueryIt(sql[0]);
         const Total_Rmder = await QueryIt(sql[1]);
         const Month_Rmder = await QueryIt(sql[2]);
-        if(Rdata.length<1)  return res.json({status: 300, success: false}); 
+        if(Rdata.length<1)  return res.json({status: 300, total:Total_Rmder, success: false}); 
         return res.json({
             status: 200,
             success: true,
