@@ -8,6 +8,7 @@ var Del_list =[];
 var FPeriod = document.getElementById("FPeriod").value;
 let Rmder_Amount = {month: 0 ,total: 0 }
 
+const SrvDmn = (window.location.hostname != '') ? window.location.hostname : 'http://localhost'; 
 const Rmder = document.getElementById("Remaining_Amt");
 const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
@@ -62,12 +63,13 @@ async function Fetch_data() {
     maxD = daysInMonth(month,year);
     Date_chose.max = FPeriod + `-${maxD}`;  
     FirstLoad = false;
+    alert(SrvDmn);
   }
   var option = {
   method: 'GET',
   headers:{'Content-Type':'application/json'}, 
   };
-  const URL = `http://localhost:3000/fetch/${FPeriod}`;
+  const URL = `${SrvDmn}:3000/fetch/${FPeriod}`;
   fetch(URL,option)
   .then(res => {return res.json()})
   .then(objectData =>
@@ -133,7 +135,7 @@ function SaveNew() {
       headers:{'Content-Type':'application/json'}, 
       body: JSON.stringify(RecordsList),  
       };
-      fetch('http://localhost:3000/postNew',option)
+      fetch(`${SrvDmn}:3000/postNew`,option)
       .then(res => {return res.json()})
       .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All new records saved`);});
       RecordsList = []; 
@@ -168,7 +170,7 @@ function Delete_rec(){
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
   body: JSON.stringify(Del_list),};
-  fetch('http://localhost:3000/delete',optionD)
+  fetch(`${SrvDmn}:3000/delete`,optionD)
   .then(res => {return res.json()})
   .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All selected records deleted`);});
   Del_list = [];
@@ -181,7 +183,7 @@ function Update() {
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
   body: JSON.stringify(Udate_List),};
-  fetch('http://localhost:3000/update',optionU)
+  fetch(`${SrvDmn}:3000/update`,optionU)
   .then(res => {return res.json()})
   .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All update records saved`);});
   Udate_List = [];
