@@ -8,7 +8,7 @@ var Del_list =[];
 var FPeriod = document.getElementById("FPeriod").value;
 let Rmder_Amount = {month: 0 ,total: 0 }
 
-const SrvDmn = (window.location.hostname != '') ? window.location.hostname : 'http://localhost'; 
+const SrvDmn = (window.location.hostname != '') ? `http://${window.location.hostname}` : 'http://localhost'; 
 const Rmder = document.getElementById("Remaining_Amt");
 const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
@@ -63,7 +63,6 @@ async function Fetch_data() {
     maxD = daysInMonth(month,year);
     Date_chose.max = FPeriod + `-${maxD}`;  
     FirstLoad = false;
-    alert(SrvDmn);
   }
   var option = {
   method: 'GET',
