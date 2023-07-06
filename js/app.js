@@ -5,6 +5,8 @@ let sql;
 const url = require('url');
 const { error } = require('console');
 const { promises } = require('dns');
+const { resolve } = require('path');
+const { rejects } = require('assert');
 const sqlite = require('sqlite3').verbose();
 const db = new sqlite.Database('../DB/PersonalFinance.db',sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err);
@@ -20,15 +22,15 @@ app.use((req, res, next) => {
   })
 
 //post new request
-app.post("/postNew", (req,res) => {
+app.post("/postNew",async (req,res) => {
     const RecordData = req.body;
     try {
         for (let i = 0; i < RecordData.length;i++)
             {
                 const {date, amount, purpose, account, categorized} = RecordData[i];
                 sql = "INSERT INTO TransactionTable(date,amount,purpose,account,categorized) VALUES (?,?,?,?,?)";
-                db.run(sql, [date, amount, purpose, account, categorized], (err) => {
-                if(err) return res.json({status: 300, success: false ,error: err, data:req.body});});
+                var Q_Res = await UpdateQuery(sql,[date, amount, purpose, account, categorized]);
+                if (Q_Res != true) return res.json({status: 300, success: false ,error:Q_Res , data:req.body});
             }
             return res.json({status: 200,success: true,});
         } 
@@ -41,7 +43,7 @@ app.post("/postNew", (req,res) => {
  });
 
  //post update request 
- app.post("/update", (req,res)=> {
+ app.post("/update",async (req,res)=> {
     const updateData = req.body;
     var baseSQL = "UPDATE TransactionTable SET"
     try{
@@ -63,9 +65,8 @@ app.post("/postNew", (req,res) => {
                     }}
                 SQLline = SQLline.slice(0,-1);
                 sql = baseSQL + SQLline + SQLcond;
-                db.run(sql, (err) => {
-                    if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
-                });
+                var Q_Res = await UpdateQuery(sql,[]);
+                if (Q_Res != true) return res.json({status: 300, success: false ,error:Q_Res , data:req.body});
             }
             return res.json({status: 200,success: true,});
         }
@@ -76,16 +77,15 @@ app.post("/postNew", (req,res) => {
             }
  });
 
-app.post("/delete", (req,res) => {
+app.post("/delete",async (req,res) => {
     const Del_list = req.body;
     try
     {
         for(let i = 0; i<Del_list.length; i++)
         {
             sql = `DELETE FROM TransactionTable WHERE ID = ${Del_list[i]}`; 
-            db.run(sql, (err) => {
-                if(err) return res.json({status: 300, success: false ,error: err, data:req.body});
-            });
+            var Q_Res = await UpdateQuery(sql,[]);
+            if (Q_Res != true) return res.json({status: 300, success: false ,error:Q_Res , data:req.body});
         }
         return res.json({status: 200,success: true,});
     }
@@ -132,4 +132,12 @@ function QueryIt (Queryline){
         })
     })
 }
+
+function UpdateQuery (Queryline,Para){
+    return new Promise((resolve,reject) =>
+    db.all(Queryline,Para,(err)=>{
+        if(err) reject(err);
+        else resolve(true);
+    })
+)}
 app.listen(3000);
