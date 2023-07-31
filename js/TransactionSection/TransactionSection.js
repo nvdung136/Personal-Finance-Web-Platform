@@ -1,5 +1,6 @@
 let maxD;
 let Update_Ele;
+let FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 9})
 
 var FirstLoad = true;
 var RecordsList = [];
@@ -51,7 +52,7 @@ function ChangePeriod(){
   Date_chose.max = FPeriod + `-${maxD}`;  
 }
 
-async function Fetch_data() {
+function Fetch_data() {
   if(FirstLoad)
   {
     const date = new Date();
@@ -80,7 +81,7 @@ async function Fetch_data() {
       objectData.data.map((values) => {
         tableData += `<tr id="Row_${values.ID}">
         <td ondblclick="TBLcell_click(${values.ID},'Date')"><div class="row_data"  id="Date_${values.ID}">${values.Date}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data"  id="Amt_${values.ID}">${values.Amount}</div></td>
+        <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data" style="text-align:right"  id="Amt_${values.ID}">${FORMATER.format(values.Amount)}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'For')"><div class="row_data" id="For_${values.ID}">${values.Purpose}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'Acc')"><div class="row_data" id="Acc_${values.ID}">${values.Account}</div></td>
         <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td>
@@ -95,22 +96,28 @@ async function Fetch_data() {
       TBLContain.innerHTML = '';
       alert('No records to show');
     }
-    if(Btt_Mth_Total == "Month") Rmder.textContent = Rmder_Amount.month;
+    if(Btt_Mth_Total.textContent == "Month") Rmder.textContent = Rmder_Amount.month;
     else Rmder.textContent = Rmder_Amount.total;
   });  
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 
 //Temporary submit newlines to the table
-function SubmitLine() {
+async function SubmitLine(CSV_DataArray) {
   var ThisList = {};
+  var date = '',amount = '',purpose = '',account = '',categorized='';
   var tableData = TBLContain.innerHTML;
-  var date = document.getElementById("in_Date").value;
-  var amount = document.getElementById("in_Amount").value;
-  var purpose = document.getElementById("in_Purpose").value;
-  var account = document.getElementById("in_Acc").value;
-  var categorized = document.getElementById("in_CCode").value;
-  var ThisList = {date,amount,purpose,account,categorized};
+  if(CSV_DataArray == undefined){
+    date = document.getElementById("in_Date").value;
+    amount = document.getElementById("in_Amount").value;
+    purpose = document.getElementById("in_Purpose").value;
+    account = document.getElementById("in_Acc").value;
+    categorized = document.getElementById("in_CCode").value;
+    if((amount == '') || (purpose == '')) {
+      alert("Not sufficient inputs");
+      return;
+    }
+  ThisList = {date,amount,purpose,account,categorized};
   tableData += `<tr class="w3-indigo">
     <td>${date}</td>
     <td>${amount}</td>
@@ -123,9 +130,14 @@ function SubmitLine() {
   Date_chose.focus();
   TBLContain.innerHTML = tableData;
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
+  }
+  else {
+  RecordsList = CSV_DataArray;
+  SaveNew();
+  }
 }
 
-//Save all lthe newlines onto the database
+//Save all the newlines onto the database
 function SaveNew() { 
     if(RecordsList.length) 
     {
@@ -271,7 +283,7 @@ P_enter.addEventListener("keydown", function(event){
 })
 
 const Btt_Mth_Total = document.getElementById("AmtRem_ByMth")
-Btt_Mth_Total.addEventListener("click", function(){
+Btt_Mth_Total.addEventListener("click", function() {
   if(Btt_Mth_Total.textContent == "Total") 
   {
     Rmder.textContent = Rmder_Amount.month;

@@ -7,7 +7,10 @@
 <link rel="stylesheet" href="./css/w3.css">
 <link rel="stylesheet" href="./css/googleapisFont.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="./css/loader_line.css">
+<script src="./js/TransactionSection/CSV_parse.js" defer></script>
 <script src="./js/TransactionSection/TransactionSection.js" defer></script>
+
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
@@ -86,7 +89,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <button class="w3-button w3-padding-16" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
     </div> 
     <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
-      <table class="w3-table-all w3-light-grey w3-padding-16" id="Transac_TB">
+      <table class="w3-table-all w3-light-grey w3-padding-16" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" id="Transac_TB">
         <thead>    
           <tr>
             <th style="width:15%;min-width:107px">Date</th>
@@ -98,7 +101,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
             <!-- <th style="width:7%"></th> -->
           </tr>
         </thead>
-        <tbody id = "tableContent" >
+        <tbody id = "tableContent">
         </tbody>
       </table>
     </div>
@@ -106,7 +109,11 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <br><hr>
   <!-- New Transaction input field -->
   <div class="w3-container" style="width: 100%;"> 
-    <h4>New transaction</h4>
+    <div>
+      <h4 class="w3-left">New transaction</h4>
+      <button class="w3-button w3-right w3-teal" onclick="CSV_input()">CSV</button>
+    </div>
+    <!--Display section  -->
     <table class="w3-table-all">
       <thead>
         <th style="width:15%">Date</th>
@@ -115,7 +122,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <th style="width:8%">Account</th>
         <th style="width:7%">C-Code</th>
       </thead>
-      <form>
       <tbody id = "input_Tb">
         <tr>
           <td>
@@ -144,7 +150,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         </tr>
       </tbody>  
     </table>
-    </form>
     <div>
       <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
       <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
