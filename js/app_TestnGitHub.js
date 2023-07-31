@@ -6,7 +6,7 @@ const url = require('url');
 const { error } = require('console');
 const { promises } = require('dns');
 const sqlite = require('sqlite3').verbose();
-const db = new sqlite.Database('../DB/PersonalFinance_TestnGitHub.db',sqlite.OPEN_READWRITE, (err) => {
+const db = new sqlite.Database('../DB/PersonalFinance.db',sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err);
 });
 
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
   })
 
 //post new request
-app.post("/postNew",async (req,res) => {
+app.post("/postNew", (req,res) => {
     const RecordData = req.body;
     try {
         for (let i = 0; i < RecordData.length;i++)
@@ -100,8 +100,8 @@ app.post("/delete", (req,res) => {
 app.get("/fetch/:period", async (req,res) => {
     fperiod = req.params.period;
     sql = [ `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`,
-            `SELECT printf("%,d",SUM(Amount)) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,
-            `SELECT printf("%,d",SUM(Amount)) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`]
+            `SELECT SUM(Amount) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,
+            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`]
     try {
         const Rdata = await QueryIt(sql[0]);
         const Total_Rmder = await QueryIt(sql[1]);
@@ -123,13 +123,3 @@ app.get("/fetch/:period", async (req,res) => {
         });
     }
 });
-
-function QueryIt (Queryline){
-    return new Promise((resolve,reject)=> {
-        db.all(Queryline,(err,rows) =>{
-            if(err) reject(err);
-            else resolve(rows);
-        })
-    })
-}
-app.listen(3000);

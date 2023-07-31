@@ -2,4 +2,5 @@
 /js/Initiation.bat
 /js/invisible.vbs
 /js/node_modules/
-/DB/
+/js/app_inUse.js
+/DB/PersonalFinance_inUse.db
