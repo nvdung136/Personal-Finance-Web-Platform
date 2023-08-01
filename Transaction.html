@@ -62,8 +62,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <header class="w3-container" style="padding-top:22px">
     <h5><b><i class="fa fa-comment w3-padding"></i>Transaction page</b></h5>
   </header>
-
   <div class="w3-row-padding w3-margin-bottom">
+    <!-- Summary pannel -->
     <div class="w3-half">
       <div class="w3-container w3-red w3-padding-16">
         <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
@@ -79,8 +79,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
   <hr>
   <br>
-  <!-- Transaction table begins -->
+
+  <!-- Transaction and function section -->
   <div class="w3-container">
+    <!-- Header and query navigate input -->
     <div class="w3-container w3-half"> 
       <h4 class="w3-left">Transaction details</h4> 
     </div>
@@ -88,6 +90,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <input type="month" id="FPeriod" min="2023-05" onchange="ChangePeriod()"></input> 
       <button class="w3-button w3-padding-16" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
     </div> 
+    <!-- Records display div -->
     <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
       <table class="w3-table-all w3-light-grey w3-padding-16" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" id="Transac_TB">
         <thead>    
@@ -107,14 +110,17 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
   </div>
   <br><hr>
+
   <!-- New Transaction input field -->
   <div class="w3-container" style="width: 100%;"> 
+    <!-- Header and mass input by csv file -->
     <div>
       <h4 class="w3-left">New transaction</h4>
       <button class="w3-button w3-right w3-teal" onclick="CSV_input()">CSV</button>
     </div>
-    <!--Display section  -->
+    <!--Input table section  -->
     <table class="w3-table-all">
+      <!-- Table header -->
       <thead>
         <th style="width:15%">Date</th>
         <th style="width:10% ">Amount</th>
@@ -122,6 +128,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <th style="width:8%">Account</th>
         <th style="width:7%">C-Code</th>
       </thead>
+      <!-- Input area -->
       <tbody id = "input_Tb">
         <tr>
           <td>
@@ -150,19 +157,21 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         </tr>
       </tbody>  
     </table>
+    <!-- Backend-API interact function -->
     <div>
       <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
       <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
       <button class="w3-button w3-orange w3-right" id="Delete_B" onclick="Delete_rec()"> Delete </button>
-      <!-- change for SaveNew() test -->
     </div>  
   </div>
   <hr>
+
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-dark-grey">
     <h4>VAN-DUNG NGO</h4>
     <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
   </footer>
+  
   <!-- End page content -->
 </div>
 </body>
