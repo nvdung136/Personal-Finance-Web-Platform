@@ -6,7 +6,7 @@ const url = require('url');
 const { error } = require('console');
 const { promises } = require('dns');
 const sqlite = require('sqlite3').verbose();
-const db = new sqlite.Database('../DB/PersonalFinance.db',sqlite.OPEN_READWRITE, (err) => {
+const db = new sqlite.Database('../DB/PersonalFinance_TestnGitHub.db',sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err);
 });
 

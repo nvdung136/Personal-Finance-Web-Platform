@@ -1,17 +1,19 @@
-// ** GLOBAL VARIABLES ** 
+//---------------------------------- ** GLOBAL VARIABLES ** ---------------------------------- 
 // * ELEMENTS
 const Rmder = document.getElementById("Remaining_Amt");
 const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
 const Date_chose = document.getElementById("in_Date");
+const P_enter = document.getElementById("input_Tb");
+const Btt_Mth_Total = document.getElementById("AmtRem_ByMth")
 
-// SUPPORT 
+// * SUPPORT 
 var FirstLoad = true;
 var maxD = "";
 var Update_Ele = "";
-const FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 9, maximumFractionDigits: 2})
+const FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 12})
 
-// OPERATION
+// * OPERATION
 var RecordsList = [];
 var Udate_List = [];
 var Del_list =[];
@@ -26,8 +28,9 @@ var mySidebar = document.getElementById("mySidebar");
 // Get the DIV with overlay effect
 var overlayBg = document.getElementById("myOverlay");
 
-// ** FUNCTIONS **
-// * INTERACTIVE 
+//---------------------------------- *** FUNCTIONS *** ----------------------------------
+
+// ** INTERACTIVE - ELEMENTS **
 
 // Toggle between showing and hiding the sidebar, and add overlay effect
 function w3_open() {
@@ -46,12 +49,42 @@ function w3_close() {
   overlayBg.style.display = "none";
 }
 
-// * OPERATING 
+// When focus() at the input Table - press enter to initate submiting line
+P_enter.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("Submit_B").click();
+  }
+});
+
+// When focus() at the input Table - press shift + enter to initate save records
+P_enter.addEventListener("keydown", function(event){
+  if (event.shiftKey && event.key === 'Enter'){
+    event.preventDefault();
+    document.getElementById("Save_B").click();
+  }
+})
+
+// Toggle between Month SUM and Total SUM
+Btt_Mth_Total.addEventListener("click", function() {
+  if(Btt_Mth_Total.textContent == "Total") 
+  {
+    Rmder.textContent = FORMATER.format(Rmder_Amount.month);
+    Btt_Mth_Total.textContent = "Month";
+  }
+  else
+  {
+    Rmder.textContent = FORMATER.format(Rmder_Amount.total);
+    Btt_Mth_Total.textContent = "Total"
+  }
+});
 
 
-// MAIN 
+// ** OPERATING ** 
+
+// * API * 
 //To fectch the data of the input month
-function Fetch_data() {
+async function Fetch_data() {
   // ONload run - to adjust the fetching period to the current month
   if(FirstLoad)
   {
@@ -72,10 +105,10 @@ function Fetch_data() {
   headers:{'Content-Type':'application/json'}, 
   };
   let URL = `${SrvDmn}:${portNO}/fetch/${FPeriod}`;
-  let _Fetching = fetch(URL,option).catch(() => {alert("Failed to load data"); return});
-  
+  let _Fetching = await fetch(URL,option).catch(() => {alert("Failed to load data"); return});
+
   // Parsing and displaying data
-  let objectData = _Fetching.json();
+  let objectData = await _Fetching.json();
   switch (objectData.status){
     case 200: {
     Rmder_Amount.month = objectData.month;
@@ -83,21 +116,80 @@ function Fetch_data() {
     let tableData = '';
     objectData.data.map((values) => {tableData += Add_row(values);});
     TBLContain.innerHTML = tableData;
+    break;
     }
     case 300: {
     Rmder_Amount.month = 0;
     Rmder_Amount.total = objectData.total;
     TBLContain.innerHTML = '';
     alert('No records to show');
+    break;
     }
   }
   if(Btt_Mth_Total.textContent == "Month") Rmder.textContent =FORMATER.format(Rmder_Amount.month);
   else Rmder.textContent = FORMATER.format(Rmder_Amount.total); //Re-format data
-  //
+  
+  //Scroll the display table to the end
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
+  // Clear all operation variable
+  RecordsList = [];
+  Udate_List = [];
+  Del_list =[];
 }
 
-// MINOR OPS
+//Save all the newlines onto the database
+async function SaveNew(CSV_DataArray) { 
+  RecordsList = (CSV_DataArray != (undefined || null)) ? CSV_DataArray : RecordsList; 
+  if(RecordsList.length) 
+  {
+    let option = {
+    method: 'POST',
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify(RecordsList),  
+    };
+    let _Fetching = await fetch(`${SrvDmn}:3000/postNew`,option).catch(() => {alert("Cannot reach the server"); return;})
+    let Obj_DATA = await _Fetching.json();
+    if(Obj_DATA.success == false) 
+      alert(`Failed to save records`);
+    else 
+      alert(`All new records saved`);
+    RecordsList = []; 
+  }
+  if (Udate_List.length) Update();
+  setTimeout(Fetch_data(),500);
+}
+
+// Delete chosen records
+async function Delete_rec(){
+  if (!Del_list.length) return;
+  let option = {
+  method: 'POST',
+  headers:{'Content-Type':'application/json'}, 
+  body: JSON.stringify(Del_list)
+  };
+  let _Fetching = await fetch(`${SrvDmn}:3000/delete`,option).catch(() => {alert("Cannot reach the server"); return;})
+  let Obj_DATA = await _Fetching.json();
+  if(Obj_DATA.success == false) alert(`Failed to delete records`);
+  else alert(`All selected records deleted`);
+  Del_list = [];
+  setTimeout(Fetch_data(),500);
+}
+
+// Update modifies to records
+async function Update() {  
+  let option = {
+  method: 'POST',
+  headers:{'Content-Type':'application/json'}, 
+  body: JSON.stringify(Udate_List),};
+  let _Fetching = await fetch(`${SrvDmn}:3000/update`,option).catch(() => {alert("Cannot reach the server"); return;})
+  let Obj_DATA = await _Fetching.json();
+  if(Obj_DATA.success == false) alert(`Failed to save records`);
+  else alert(`All update records saved`);
+  Udate_List = [];
+  setTimeout(Fetch_data(),500);
+}
+
+// * Pre-API functions *
 // Change the data fetching period (by month) AND update submit section to follow suit
 function ChangePeriod(){
   FPeriod = document.getElementById("FPeriod").value;
@@ -108,6 +200,153 @@ function ChangePeriod(){
   Date_chose.min = Pre_setD;
   maxD = daysInMonth(Fmonth,Fyear);
   Date_chose.max = FPeriod + `-${maxD}`;  
+}
+
+//Temporary submit newlines to the table
+function SubmitLine() {
+  let ThisList = {};
+  let date = '',amount = '',purpose = '',account = '',categorized='';
+  let N_row = document.createElement('tr');
+  date = document.getElementById("in_Date").value;
+  amount = document.getElementById("in_Amount").value;
+  purpose = document.getElementById("in_Purpose").value;
+  account = document.getElementById("in_Acc").value;
+  categorized = document.getElementById("in_CCode").value;
+  if((amount == '') || (purpose == '')) {
+    alert("Not enough inputs");
+    return;
+  }
+  ThisList = {date,amount,purpose,account,categorized};
+  N_row.classList.add('w3-indigo')
+  let Submiting =`<td>${date}</td>
+    <td style="text-align: right;">${FORMATER.format(amount)}</td>
+    <td>${purpose}</td>
+    <td>${account}</td>
+    <td>${categorized}</td>`;
+  let Clk2Del = document.createElement('td')
+  N_row.innerHTML += Submiting;
+  N_row.appendChild(Clk2Del);
+  RecordsList.push(ThisList);
+  Date_chose.focus();
+  TBLContain.appendChild(N_row); 
+  Clk2Del.addEventListener('dblclick',() => Del_Submit(ThisList.length,N_row));
+  Clk2Del.classList.add('w3-hover-red');
+  document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
+}
+
+//To delete the submited line
+function Del_Submit(index,line){
+  RecordsList.splice(index,1);
+  TBLContain.removeChild(line);
+  return;
+}
+
+//Check and uncheck Delete box
+function Delete_CheckB(ID){
+  const deleteB = document.getElementById(`Del_${ID}`);
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  deleteB.innerHTML = `<input onclick="Delete_UnCheck(${ID})" ID="DelBox_${ID}" type="checkbox" checked="true"></input>`;
+  SelectRow.classList.add('w3-orange');
+  if(!Del_list.includes(ID)) Del_list.push(ID);
+}
+
+function Delete_UnCheck(ID)
+{
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  const deleteB = document.getElementById(`Del_${ID}`);
+  const Del_CB = document.getElementById(`DelBox_${ID}`);
+  if(!Del_CB.checked) 
+  {
+    SelectRow.classList.remove('w3-orange'); 
+    Del_list.splice(Del_list.indexOf(ID),1); 
+    deleteB.innerHTML =``;
+  }
+}
+
+// Upon double click to the table cell - it let the user to modify record
+function TBLcell_click(RowID, Content){
+  // Get the modyfing row
+  const SelectRow = document.getElementById(`Row_${RowID}`);
+  const idt = `${Content}_${RowID}`;
+  const SelectCell = document.getElementById(idt);
+  // Get the value before modification - a little modify if it is a FORMATED displayed number 
+  const DefaultVal = SelectCell.innerHTML.match(',') ? SelectCell.innerHTML.replaceAll(',','') : SelectCell.innerHTML ;
+  // Give the row a khaki color
+  SelectRow.classList.add("w3-khaki");
+  // Modify the HTML based on the content under modification
+  switch(Content){
+    case ('Date'):
+    SelectCell.innerHTML = `<Input type="date" id="${idt}_UDate"></Input>`; 
+    break;
+    case ('Amt'):
+    SelectCell.innerHTML = `<Input type="number" id="${idt}_UDate"></Input>`;
+    break;
+    case ('For'):
+    SelectCell.innerHTML = `<Input type="text" style="width:100%;" id="${idt}_UDate"></Input>`; 
+    break;
+    case ('Acc'):
+    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="TCB">TCB</option><option value="BID">BID</option></select>`; 
+    break;
+    case ('CCode'):
+    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`; 
+    break;
+  }
+  Update_Ele = document.getElementById(`${idt}_UDate`);
+  // For date we need a scope of possible changes 
+  if(Content == 'Date')
+  {
+    Update_Ele.max = FPeriod + '-'+maxD; 
+    Update_Ele.min = FPeriod + '-01';
+  }
+  Update_Ele.value = DefaultVal;
+  Update_Ele.focus();
+  // Update to the update list upon on of focus
+  Update_Ele.setAttribute('onfocusout',`Udate_Row(${RowID},'${Content}','${DefaultVal}')`);
+  return;
+}
+
+// Once modified - the data of the row will be updated 
+function Udate_Row(ID, Content, DefaultVal){
+  // Get the modyfied row and remove its brown
+  const SelectRow = document.getElementById(`Row_${ID}`);
+  SelectRow.classList.remove("w3-khaki");
+  const idt = `${Content}_${ID}`;
+  // Get the cell div and update its value
+  const SelectCell = document.getElementById(idt);
+  const NewVal = Update_Ele.value;
+  SelectCell.innerHTML = (Content == 'Amt') ? FORMATER.format(Update_Ele.value) : Update_Ele.value;
+
+  //If no changes compare to the previous value then return
+  if (DefaultVal == NewVal) return;
+  
+  //If there is(are) change(s) we make it lime
+  SelectRow.classList.add("w3-lime");
+
+  // Create an Object instance to represent the update informatio (records ID and update content)
+  var UpdateObj = {}
+  UpdateObj.ID = ID;
+  for(let i = 0; i< Udate_List.length; i++)
+  {
+    // If the ID has been modified with other changes before, its ID will shown up in Udate_List
+    if (Udate_List[i].ID == ID) 
+    {
+      // If found then we can update the current one instead of add another obj to Udate_List
+      // By copy and delete the array element ...
+      UpdateObj = Udate_List[i];
+      Udate_List.splice(i,1)
+      break;
+    }
+  } 
+  //... then update its key with the co-responding value. 
+  switch(Content){
+    case ('Date'): UpdateObj.date = Update_Ele.value; break;
+    case ('Amt'): UpdateObj.amount = Update_Ele.value; break;
+    case ('Acc'): UpdateObj.account = Update_Ele.value; break;
+    case ('CCode'):UpdateObj.categorized = Update_Ele.value; break;
+    case ('For'): UpdateObj.purpose = Update_Ele.value; break;
+  }
+  // Push the element to the array
+  Udate_List.push(UpdateObj);
 }
 
 // * SUPPORTING 
@@ -129,198 +368,3 @@ function Add_row(Obj_DATA){
   </tr>`
   return Row_DATA;
 }
-
-
-//Temporary submit newlines to the table
-function SubmitLine(CSV_DataArray) {
-  var ThisList = {};
-  var date = '',amount = '',purpose = '',account = '',categorized='';
-  var tableData = TBLContain.innerHTML;
-  if(CSV_DataArray == undefined){
-    date = document.getElementById("in_Date").value;
-    amount = document.getElementById("in_Amount").value;
-    purpose = document.getElementById("in_Purpose").value;
-    account = document.getElementById("in_Acc").value;
-    categorized = document.getElementById("in_CCode").value;
-    if((amount == '') || (purpose == '')) {
-      alert("Not sufficient inputs");
-      return;
-    }
-  ThisList = {date,amount,purpose,account,categorized};
-  tableData += `<tr class="w3-indigo">
-    <td>${date}</td>
-    <td>${amount}</td>
-    <td>${purpose}</td>
-    <td>${account}</td>
-    <td>${categorized}</td> 
-    <tr>`;
-  console.log(ThisList);
-  RecordsList.push(ThisList);
-  Date_chose.focus();
-  TBLContain.innerHTML = tableData;
-  document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
-  }
-  else {
-  RecordsList = CSV_DataArray;
-  SaveNew();
-  }
-}
-
-//Save all the newlines onto the database
-function SaveNew() { 
-    if(RecordsList.length) 
-    {
-      var option = {
-      method: 'POST',
-      headers:{'Content-Type':'application/json'}, 
-      body: JSON.stringify(RecordsList),  
-      };
-      fetch(`${SrvDmn}:3000/postNew`,option)
-      .then(res => {return res.json()})
-      .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All new records saved`);});
-      RecordsList = []; 
-    }
-    if (Udate_List.length) Update();
-}
-
-function Delete_CheckB(ID){
-  const deleteB = document.getElementById(`Del_${ID}`);
-  const SelectRow = document.getElementById(`Row_${ID}`);
-  deleteB.innerHTML = `<input onclick="Delete_List(${ID})" ID="DelBox_${ID}" type="checkbox" checked="true"></input>`;
-  SelectRow.classList.add('w3-orange');
-  if(!Del_list.includes(ID)) Del_list.push(ID);
-}
-
-function Delete_List(ID)
-{
-  const SelectRow = document.getElementById(`Row_${ID}`);
-  const deleteB = document.getElementById(`Del_${ID}`);
-  const Del_CB = document.getElementById(`DelBox_${ID}`);
-  if(!Del_CB.checked) 
-  {
-    SelectRow.classList.remove('w3-orange'); 
-    Del_list.splice(Del_list.indexOf(ID),1); 
-    deleteB.innerHTML =``;
-  }
-}
-
-function Delete_rec(){
-  if (!Del_list.length) return;
-  var optionD = {
-  method: 'POST',
-  headers:{'Content-Type':'application/json'}, 
-  body: JSON.stringify(Del_list),};
-  fetch(`${SrvDmn}:3000/delete`,optionD)
-  .then(res => {return res.json()})
-  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All selected records deleted`);});
-  Del_list = [];
-}
-
-
-
-function Update() {  
-  var optionU = {
-  method: 'POST',
-  headers:{'Content-Type':'application/json'}, 
-  body: JSON.stringify(Udate_List),};
-  fetch(`${SrvDmn}:3000/update`,optionU)
-  .then(res => {return res.json()})
-  .then(data => {if(data.success == false) alert(`Failed to save records`);else alert(`All update records saved`);});
-  Udate_List = [];
-}
-
-function TBLcell_click(RowID, Content){
-  const SelectRow = document.getElementById(`Row_${RowID}`);
-  const idt = `${Content}_${RowID}`;
-  const selectDiv = document.getElementById(idt);
-  const DefaultVal = selectDiv.innerHTML;
-  // selectDiv.setAttribute("contenteditable",'true');
-  SelectRow.classList.add("w3-khaki");
-  switch(Content){
-    case ('Date'):
-      selectDiv.innerHTML = `<Input type="date" id="${idt}_UDate"></Input>`;
-      Update_Ele = document.getElementById(`${idt}_UDate`); 
-      Update_Ele.max = FPeriod + '-'+maxD; 
-      Update_Ele.min = FPeriod + '-01';
-      break;
-      case ('Amt'):
-      selectDiv.innerHTML = `<Input type="number" id="${idt}_UDate"></Input>`;
-      Update_Ele  = document.getElementById(`${idt}_UDate`);
-      break;
-      case ('Acc'):
-      selectDiv.innerHTML = `<select id="${idt}_UDate"><option value="TCB">TCB</option><option value="BID">BID</option></select>`;
-      Update_Ele = document.getElementById(`${idt}_UDate`); 
-      break;
-      case ('CCode'):
-      selectDiv.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`;
-      Update_Ele = document.getElementById(`${idt}_UDate`); 
-      break;  
-      case ('For'):
-      selectDiv.innerHTML = `<Input type="text" style="width:100%;" id="${idt}_UDate"></Input>`;
-      Update_Ele = document.getElementById(`${idt}_UDate`); 
-      break;
-  }
-  Update_Ele.value = DefaultVal;
-  Update_Ele.focus();
-  Update_Ele.setAttribute('onfocusout',`Udate_Row(${RowID},'${Content}','${DefaultVal}')`);
-}
-
-function Udate_Row(ID, Content, DefaultVal){
-  const SelectRow = document.getElementById(`Row_${ID}`);
-  SelectRow.classList.remove("w3-khaki");
-  const idt = `${Content}_${ID}`;
-  const selectDiv = document.getElementById(idt);
-  const NewVal = Update_Ele.value;
-  selectDiv.innerHTML = Update_Ele.value;
-  if (DefaultVal == NewVal) return;
-  
-  SelectRow.classList.add("w3-light-green");
-  var UpdateObj = {}
-  UpdateObj.ID = ID;
-  for(let i = 0; i< Udate_List.length; i++)
-  {
-    if (Udate_List[i].ID == ID) 
-    {
-      UpdateObj = Udate_List[i];
-      Udate_List.splice(i,1);
-      break;
-    }
-  } 
-  switch(Content){
-    case ('Date'): UpdateObj.date = Update_Ele.value; break;
-    case ('Amt'): UpdateObj.amount = Update_Ele.value; break;
-    case ('Acc'): UpdateObj.account = Update_Ele.value; break;
-    case ('CCode'):UpdateObj.categorized = Update_Ele.value; break;
-    case ('For'): UpdateObj.purpose = Update_Ele.value; break;
-  }
-  Udate_List.push(UpdateObj);
-}
-
-const P_enter = document.getElementById("input_Tb");
-P_enter.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    document.getElementById("Submit_B").click();
-  }
-});
-
-P_enter.addEventListener("keydown", function(event){
-  if (event.shiftKey && event.key === 'Enter'){
-    event.preventDefault();
-    document.getElementById("Save_B").click();
-  }
-})
-
-const Btt_Mth_Total = document.getElementById("AmtRem_ByMth")
-Btt_Mth_Total.addEventListener("click", function() {
-  if(Btt_Mth_Total.textContent == "Total") 
-  {
-    Rmder.textContent = FORMATER.format(Rmder_Amount.month);
-    Btt_Mth_Total.textContent = "Month";
-  }
-  else
-  {
-    Rmder.textContent = FORMATER.format(Rmder_Amount.total);
-    Btt_Mth_Total.textContent = "Total"
-  }
-});

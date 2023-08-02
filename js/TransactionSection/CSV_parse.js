@@ -46,7 +46,7 @@ async function CSV_2_Array(DataString,BckGround,LoadingLine,Close) {
         PushRecords.push(RecordList);
     } 
     console.log(PushRecords);
-    SubmitLine(PushRecords);
+    SaveNew(PushRecords);
     BckGround.removeChild(LoadingLine);
     return Close.click();
 }
