@@ -1,27 +1,35 @@
-let maxD;
-let Update_Ele;
-let FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 9})
-
-var FirstLoad = true;
-var RecordsList = [];
-var Udate_List = [];
-var Del_list =[];
-var FPeriod = document.getElementById("FPeriod").value;
-let Rmder_Amount = {month: 0 ,total: 0 }
-
-const SrvDmn = (window.location.hostname != '') ? `http://${window.location.hostname}` : 'http://localhost'; 
+// ** GLOBAL VARIABLES ** 
+// * ELEMENTS
 const Rmder = document.getElementById("Remaining_Amt");
 const TBLContain = document.getElementById('tableContent')
 const Save_B = document.getElementById("Save_B");
 const Date_chose = document.getElementById("in_Date");
+
+// SUPPORT 
+var FirstLoad = true;
+var maxD = "";
+var Update_Ele = "";
+const FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 9, maximumFractionDigits: 2})
+
+// OPERATION
+var RecordsList = [];
+var Udate_List = [];
+var Del_list =[];
+var FPeriod = document.getElementById("FPeriod").value;
+var Rmder_Amount = {month: 0 ,total: 0 }
+const SrvDmn = (window.location.hostname != '') ? `http://${window.location.hostname}` : 'http://localhost'; 
+const portNO = 3000;
+
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
 
 // Get the DIV with overlay effect
 var overlayBg = document.getElementById("myOverlay");
 
-// Toggle between showing and hiding the sidebar, and add overlay effect
+// ** FUNCTIONS **
+// * INTERACTIVE 
 
+// Toggle between showing and hiding the sidebar, and add overlay effect
 function w3_open() {
   if (mySidebar.style.display === 'block') {
     mySidebar.style.display = 'none';
@@ -37,27 +45,19 @@ function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
-function daysInMonth (month, year) {
-    return new Date(year, month, 0).getDate();
-}
 
-function ChangePeriod(){
-  FPeriod = document.getElementById("FPeriod").value;
-  var Pre_setD = FPeriod + '-01';
-  var Fmonth = FPeriod.slice(5);
-  var Fyear = FPeriod.slice(0,4);
-  Date_chose.value = Pre_setD;
-  Date_chose.min = Pre_setD;
-  maxD = daysInMonth(Fmonth,Fyear);
-  Date_chose.max = FPeriod + `-${maxD}`;  
-}
+// * OPERATING 
 
+
+// MAIN 
+//To fectch the data of the input month
 function Fetch_data() {
+  // ONload run - to adjust the fetching period to the current month
   if(FirstLoad)
   {
-    const date = new Date();
-    const month = ((date.getMonth()+1)<10) ? `0${date.getMonth()+1}` : `${date.getMonth()+1}`;  
-    const year =  date.getFullYear();
+    let date = new Date();
+    let month = ((date.getMonth()+1)<10) ? `0${date.getMonth()+1}` : `${date.getMonth()+1}`;  
+    let year =  date.getFullYear();
     FPeriod = `${year}-${month}`;
     document.getElementById("FPeriod").value = FPeriod;
     Date_chose.min = Date_chose.value = FPeriod + '-01';
@@ -65,45 +65,74 @@ function Fetch_data() {
     Date_chose.max = FPeriod + `-${maxD}`;  
     FirstLoad = false;
   }
-  var option = {
+  
+  // Prepare payload and url for proceed fetch() 
+  let option = {
   method: 'GET',
   headers:{'Content-Type':'application/json'}, 
   };
-  const URL = `${SrvDmn}:3000/fetch/${FPeriod}`;
-  fetch(URL,option)
-  .then(res => {return res.json()})
-  .then(objectData =>
-  { 
-    if(objectData.status == 200) {
-      Rmder_Amount.month = objectData.month[0].period;
-      Rmder_Amount.total = objectData.total[0].total;
-      let tableData = "";
-      objectData.data.map((values) => {
-        tableData += `<tr id="Row_${values.ID}">
-        <td ondblclick="TBLcell_click(${values.ID},'Date')"><div class="row_data"  id="Date_${values.ID}">${values.Date}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'Amt')"><div class="row_data" style="text-align:right"  id="Amt_${values.ID}">${FORMATER.format(values.Amount)}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'For')"><div class="row_data" id="For_${values.ID}">${values.Purpose}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'Acc')"><div class="row_data" id="Acc_${values.ID}">${values.Account}</div></td>
-        <td ondblclick="TBLcell_click(${values.ID},'CCode')"><div class="row_data" id="CCode_${values.ID}">${values.Categorized}</div></td>
-        <td ondblclick="Delete_CheckB(${values.ID})"><div id="Del_${values.ID}"></div></td>
-        </tr>`
-      // <td><div class="row_data" ondblclick="TBLcell_click(${values.ID},'Reserved')></div></td><tr>`
-      TBLContain.innerHTML = tableData;});
+  let URL = `${SrvDmn}:${portNO}/fetch/${FPeriod}`;
+  let _Fetching = fetch(URL,option).catch(() => {alert("Failed to load data"); return});
+  
+  // Parsing and displaying data
+  let objectData = _Fetching.json();
+  switch (objectData.status){
+    case 200: {
+    Rmder_Amount.month = objectData.month;
+    Rmder_Amount.total = objectData.total;
+    let tableData = '';
+    objectData.data.map((values) => {tableData += Add_row(values);});
+    TBLContain.innerHTML = tableData;
     }
-      else if (objectData.status == 300) {
-      Rmder_Amount.month = 0;
-      Rmder_Amount.total = objectData.total[0].total;
-      TBLContain.innerHTML = '';
-      alert('No records to show');
+    case 300: {
+    Rmder_Amount.month = 0;
+    Rmder_Amount.total = objectData.total;
+    TBLContain.innerHTML = '';
+    alert('No records to show');
     }
-    if(Btt_Mth_Total.textContent == "Month") Rmder.textContent = Rmder_Amount.month;
-    else Rmder.textContent = Rmder_Amount.total;
-  });  
+  }
+  if(Btt_Mth_Total.textContent == "Month") Rmder.textContent =FORMATER.format(Rmder_Amount.month);
+  else Rmder.textContent = FORMATER.format(Rmder_Amount.total); //Re-format data
+  //
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
 }
 
+// MINOR OPS
+// Change the data fetching period (by month) AND update submit section to follow suit
+function ChangePeriod(){
+  FPeriod = document.getElementById("FPeriod").value;
+  let Pre_setD = FPeriod + '-01';
+  let Fmonth = FPeriod.slice(5);
+  let Fyear = FPeriod.slice(0,4);
+  Date_chose.value = Pre_setD;
+  Date_chose.min = Pre_setD;
+  maxD = daysInMonth(Fmonth,Fyear);
+  Date_chose.max = FPeriod + `-${maxD}`;  
+}
+
+// * SUPPORTING 
+// Get number of days in a specified month
+function daysInMonth (month, year) {
+    return new Date(year, month, 0).getDate();
+}
+
+// Adding Element Data to records display table 
+function Add_row(Obj_DATA){
+  let Row_DATA;
+  Row_DATA = `<tr id="Row_${Obj_DATA.ID}">
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Date')"><div class="row_data"  id="Date_${Obj_DATA.ID}">${Obj_DATA.Date}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Amt')"><div class="row_data" style="text-align:right"  id="Amt_${Obj_DATA.ID}">${FORMATER.format(Obj_DATA.Amount)}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'For')"><div class="row_data" id="For_${Obj_DATA.ID}">${Obj_DATA.Purpose}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Acc')"><div class="row_data" id="Acc_${Obj_DATA.ID}">${Obj_DATA.Account}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'CCode')"><div class="row_data" id="CCode_${Obj_DATA.ID}">${Obj_DATA.Categorized}</div></td>
+  <td ondblclick="Delete_CheckB(${Obj_DATA.ID})"><div id="Del_${Obj_DATA.ID}"></div></td>
+  </tr>`
+  return Row_DATA;
+}
+
+
 //Temporary submit newlines to the table
-async function SubmitLine(CSV_DataArray) {
+function SubmitLine(CSV_DataArray) {
   var ThisList = {};
   var date = '',amount = '',purpose = '',account = '',categorized='';
   var tableData = TBLContain.innerHTML;
@@ -286,12 +315,12 @@ const Btt_Mth_Total = document.getElementById("AmtRem_ByMth")
 Btt_Mth_Total.addEventListener("click", function() {
   if(Btt_Mth_Total.textContent == "Total") 
   {
-    Rmder.textContent = Rmder_Amount.month;
+    Rmder.textContent = FORMATER.format(Rmder_Amount.month);
     Btt_Mth_Total.textContent = "Month";
   }
   else
   {
-    Rmder.textContent = Rmder_Amount.total;
+    Rmder.textContent = FORMATER.format(Rmder_Amount.total);
     Btt_Mth_Total.textContent = "Total"
   }
 });
