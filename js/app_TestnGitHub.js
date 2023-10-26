@@ -20,7 +20,7 @@ app.use((req, res, next) => {
   })
 
 //post new request
-app.post("/postNew", (req,res) => {
+app.post("/postNew",async (req,res) => {
     const RecordData = req.body;
     try {
         for (let i = 0; i < RecordData.length;i++)
@@ -101,11 +101,17 @@ app.get("/fetch/:period", async (req,res) => {
     fperiod = req.params.period;
     sql = [ `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`,
             `SELECT SUM(Amount) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,
-            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`]
+            `SELECT SUM(Amount) AS period FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}'`,
+            `SELECT Account,SUM(Amount) AS Amount FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}' GROUP BY Account`,
+            `SELECT Account,SUM(Amount) AS Amount FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' GROUP BY Account`,
+        ]
+    
     try {
         const Rdata = await QueryIt(sql[0]);
         const Total_Rmder = await QueryIt(sql[1]).then(res => {return res[0].total});
         const Month_Rmder = await QueryIt(sql[2]).then(res => {return res[0].period});
+        const  T_Acc_Rmder = await QueryIt(sql[3])
+        const M_Acc_Rmder = await QueryIt(sql[4])
         if(Rdata.length<1)  return res.json({status: 300, total:Total_Rmder, success: false}); 
         return res.json({
             status: 200,
@@ -113,6 +119,8 @@ app.get("/fetch/:period", async (req,res) => {
             month:Month_Rmder,
             success: true,
             data:Rdata,
+            T_acc:T_Acc_Rmder,
+            M_acc: M_Acc_Rmder,
         });
     }
 
