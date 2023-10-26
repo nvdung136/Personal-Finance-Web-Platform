@@ -60,29 +60,40 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </header>
 
   <div class="w3-row-padding w3-margin-bottom">
-    <div class="w3-half">
+    <!-- Analysis panel -->
+    <div class="w3-third">
       <div class="w3-container w3-orange w3-text-white w3-padding-16">
-        <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <div class="w3-center">
-            <h3 id="Remaining_Amt">--</h3>
-            <button class="w3-button w3-white" id="AmtRem_ByMth">Total</button>
-          </div>
+        <div class="w3-left w3-half"><i class="fa fa-users w3-xxxlarge"></i></div>
+        <div class="w3-right w3-half">
+          <label class="w3-right w3-large" style="padding-right: 8px;">SYMBOL</label>
+          <div class="w3-clear"></div>
+          <input class="w3-input w3-right w3-padding" style="width: 90px;" id="SYM_list" list="SYM_B">
         </div>
         <div class="w3-clear"></div>
         <h4>Analysis</h4>
       </div>
     </div>
+    <div class="w3-twothird">
+      <div class="w3-third">
+          <button class="w3-button w3-left" style="min-width: 70%; text-align: left;" id="DCF_button">DCF analysis</button>
+          <button class="w3-button w3-left" style="min-width: 70%; text-align: left;">Dummy button</button>
+      </div>
+      <div class="w3-third" id="DCF_menu" style="display:none;"> 
+        <div class="w3-left w3-leftbar" style="overflow-y: visible;">
+          <div>
+            <button class="w3-button w3-left">FCF forecast</button>
+          </div>
+          <div>
+            <button class="w3-button w3-left">Terminal Value</button>
+          </div>
+          <div> 
+            <button class="w3-button w3-left">Valuation</button>
+          </div>
+      </div>
+      </div>
+    </div>
   </div>
   
-  <!-- Under Construction sign -->
-  <hr>
-  <div class="w3-orange w3-center w3-padding-32 w3-clear">
-    <i class="fa-solid fa-wrench w3-xxxlarge"></i>
-    <h2><b>Under construction...</b></h2>
-  </div>
-  <hr>
-
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-grey">
     <h4>VAN-DUNG NGO</h4>
@@ -114,7 +125,35 @@ function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
+
+  const b_DCF = document.getElementById('DCF_button')
+  const m_DCF = document.getElementById('DCF_menu')
+  const SYM_in = document.getElementById('SYM_list')
+
+  b_DCF.addEventListener('click', function() {
+    if(m_DCF.style.display == 'none'){
+      b_DCF.classList.replace('w3-left','w3-right')
+      b_DCF.textContent = "DCF analysis>"
+      b_DCF.style.textAlign = "right"
+      m_DCF.style.display = 'block'     
+    }
+    else{
+      b_DCF.classList.replace('w3-right','w3-left')
+      b_DCF.textContent = "DCF analysis"
+      b_DCF.style.textAlign = "left"
+      m_DCF.style.display = 'none'
+    }
+  })
 </script>
 
+<datalist id="SYM_B">
+  <option value="HPG">
+  <option value="FPT">
+  <option value="MWG">
+  <option value="TCB">
+  <option value="VIC">
+  <option value="FRT">
+</datalist>
 </body>
 </html>
+

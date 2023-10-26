@@ -69,13 +69,35 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
         <div class="w3-right">
           <div class="w3-center">
-            <h3 id="Remaining_Amt" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">--</h3>
+            <h3 class="w3-hover-shadow" id="Remaining_Amt" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">--</h3>
             <button class="w3-button w3-white" id="AmtRem_ByMth">Total</button>
           </div>
         </div>
         <div class="w3-clear"></div>
         <h4>Transactions</h4>
       </div>
+    </div>
+    <div class="w3-third">
+      <table class='w3-table-all' style="width:fit-content; min-width: 50%;;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <tbody>
+        <tr>
+          <th style="text-align: right;">Inflow</th>
+          <td id="inFlow"></td>
+        </tr>
+        <tr>
+            <th style="text-align: right;">Spending</th>
+            <td id="outFlow"></td>
+        </tr>
+        <tr>
+          <th style="text-align: right;">Unsual</th>
+          <td id="Un_Usual"></td>
+        </tr>
+        <tr>
+          <th style="text-align: right;">T_CHECK</th>
+          <td id="C_CK"></td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   <hr>
   <br>
@@ -89,7 +111,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <div class="w3-container w3-half" >
       <input type="month" id="FPeriod" min="2023-05" onchange="ChangePeriod()"></input> 
       <button class="w3-button w3-padding-16" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
-    </div> 
+    </div>  
     <!-- Records display div -->
     <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
       <table class="w3-table-all w3-light-grey w3-padding-16" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" id="Transac_TB">
@@ -132,7 +154,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <tbody id = "input_Tb">
         <tr>
           <td>
-            <Input type="date" id="in_Date" min="2023-05-01"></Input>
+            <Input type="date" id="in_Date" min="2023-09-01"></Input>
           </td>
           <td>
             <Input type="number" id="in_Amount"  style="width:100%;"></Input>
@@ -142,6 +164,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
           </td>
           <td>
             <select name="account" title="account" id="in_Acc">
+              <option value="CIC">CIC</option>
+              <option value="Cash">Cash</option>
               <option value="TCB">TCB</option>
               <option value="BID">BID</option>
             </select>
@@ -149,6 +173,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
           <td>
             <select name="ccode" title="CCode" id="in_CCode">
               <option value="null">N/A</option>
+              <option value="unsual">U_Spend</option>
               <option value="PB">PB</option>
               <option value="CK-">CK-</option>
               <option value="CK+">CK+</option>

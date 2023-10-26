@@ -17,8 +17,15 @@ const FORMATER = Intl.NumberFormat('en-US', { maximumSignificantDigits: 12})
 var RecordsList = [];
 var Udate_List = [];
 var Del_list =[];
+var OutFlow = 0;
+var InFlow = 0;
+var CK_check = 0;
+var Un_usual = 0;
+var Fet_DATA_obj = {};
 var FPeriod = document.getElementById("FPeriod").value;
-var Rmder_Amount = {month: 0 ,total: 0 }
+var Rmder_Amount = {month: 0,total: 0}
+var T_Acc_Rmder = {}
+var M_Acc_Rmder = {}
 const SrvDmn = (window.location.hostname != '') ? `http://${window.location.hostname}` : 'http://localhost'; 
 const portNO = 3000;
 
@@ -79,6 +86,22 @@ Btt_Mth_Total.addEventListener("click", function() {
   }
 });
 
+Rmder.addEventListener("click",function(){
+  let Alert = ``;
+  if(Btt_Mth_Total.textContent == "Total") 
+  {
+    T_Acc_Rmder.map(data => {
+      Alert += `${data.Account} : ${FORMATER.format(data.Amount)}\n`
+    }) 
+  }
+  else
+  {
+    M_Acc_Rmder.map(data => {
+      Alert += `${data.Account} : ${FORMATER.format(data.Amount)}\n`
+    })
+  }
+  alert(Alert)
+})
 
 // ** OPERATING ** 
 
@@ -111,16 +134,27 @@ async function Fetch_data() {
   let objectData = await _Fetching.json();
   switch (objectData.status){
     case 200: {
-    Rmder_Amount.month = objectData.month;
-    Rmder_Amount.total = objectData.total;
-    let tableData = '';
-    objectData.data.map((values) => {tableData += Add_row(values);});
-    TBLContain.innerHTML = tableData;
-    break;
+      // fetching the account remaining data from the server is not a sustainable approach 
+      // later on, replace that with using function within the the JavaScript (Loop from Fet_DATA_obj)
+      Fet_DATA_obj = objectData.data;
+      OutFlow = 0;
+      InFlow = 0;
+      Rmder_Amount.month = objectData.month;
+      Rmder_Amount.total = objectData.total;
+      T_Acc_Rmder = objectData.T_acc;
+      M_Acc_Rmder = objectData.M_acc;
+      let tableData = '';
+      objectData.data.map((values) => {tableData += Add_row(values);});
+      TBLContain.innerHTML = tableData;
+      break;
     }
     case 300: {
     Rmder_Amount.month = 0;
-    Rmder_Amount.total = objectData.total;
+    Rmder_Amount.total = 0;
+    Rmder_Amount.t_CIC = 0;
+    Rmder_Amount.t_Cash = 0;
+    Rmder_Amount.m_CIC = 0;
+    Rmder_Amount.m_Cash = 0;
     TBLContain.innerHTML = '';
     alert('No records to show');
     break;
@@ -128,6 +162,9 @@ async function Fetch_data() {
   }
   if(Btt_Mth_Total.textContent == "Month") Rmder.textContent =FORMATER.format(Rmder_Amount.month);
   else Rmder.textContent = FORMATER.format(Rmder_Amount.total); //Re-format data
+  document.getElementById('outFlow').textContent = FORMATER.format(OutFlow);
+  document.getElementById('inFlow').textContent = FORMATER.format(InFlow);
+  document.getElementById("C_CK").textContent = (CK_check == 0) ? "TRUE" : "FALSE";
   
   //Scroll the display table to the end
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
@@ -285,10 +322,11 @@ function TBLcell_click(RowID, Content){
     SelectCell.innerHTML = `<Input type="text" style="width:100%;" id="${idt}_UDate"></Input>`; 
     break;
     case ('Acc'):
-    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="TCB">TCB</option><option value="BID">BID</option></select>`; 
+    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="CIC">CIC</option>
+    <option value="Cash">Cash</option><option value="TCB">TCB</option><option value="BID">BID</option></select>`; 
     break;
     case ('CCode'):
-    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`; 
+    SelectCell.innerHTML = `<select id="${idt}_UDate"><option value="null">N/A</option><option value="unsual">U_Spend</option><option value="null">N/A</option><option value="PB">PB</option><option value="CK-">CK-</option><option value="CK+">CK+</option></select>`; 
     break;
   }
   Update_Ele = document.getElementById(`${idt}_UDate`);
@@ -357,6 +395,7 @@ function daysInMonth (month, year) {
 
 // Adding Element Data to records display table 
 function Add_row(Obj_DATA){
+  Categorized(Obj_DATA)
   let Row_DATA;
   Row_DATA = `<tr id="Row_${Obj_DATA.ID}">
   <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Date')"><div class="row_data"  id="Date_${Obj_DATA.ID}">${Obj_DATA.Date}</div></td>
@@ -367,4 +406,14 @@ function Add_row(Obj_DATA){
   <td ondblclick="Delete_CheckB(${Obj_DATA.ID})"><div id="Del_${Obj_DATA.ID}"></div></td>
   </tr>`
   return Row_DATA;
+}
+
+// Categorized data
+function Categorized(Obj_DATA){
+  if (Obj_DATA.Categorized.includes('CK',0)) 
+  {
+    CK_check += Obj_DATA.Amount;
+    return
+  }
+  if(Obj_DATA.Amount<0) {OutFlow += Obj_DATA.Amount;} else {InFlow += Obj_DATA.Amount;}
 }
