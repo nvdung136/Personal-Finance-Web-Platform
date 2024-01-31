@@ -127,7 +127,7 @@ async function Fetch_data() {
   method: 'GET',
   headers:{'Content-Type':'application/json'}, 
   };
-  let URL = `${SrvDmn}:${portNO}/fetch/${FPeriod}`;
+  let URL = `${SrvDmn}:${portNO}/trnst_fetch/${FPeriod}`;
   let _Fetching = await fetch(URL,option).catch(() => {alert("Failed to load data"); return});
 
   // Parsing and displaying data
@@ -184,7 +184,7 @@ async function SaveNew(CSV_DataArray) {
     headers:{'Content-Type':'application/json'}, 
     body: JSON.stringify(RecordsList),  
     };
-    let _Fetching = await fetch(`${SrvDmn}:3000/postNew`,option).catch(() => {alert("Cannot reach the server"); return;})
+    let _Fetching = await fetch(`${SrvDmn}:3000/rcd_postNew`,option).catch(() => {alert("Cannot reach the server"); return;})
     let Obj_DATA = await _Fetching.json();
     if(Obj_DATA.success == false) 
       alert(`Failed to save records`);
@@ -204,7 +204,7 @@ async function Delete_rec(){
   headers:{'Content-Type':'application/json'}, 
   body: JSON.stringify(Del_list)
   };
-  let _Fetching = await fetch(`${SrvDmn}:3000/delete`,option).catch(() => {alert("Cannot reach the server"); return;})
+  let _Fetching = await fetch(`${SrvDmn}:3000/rcd_delete`,option).catch(() => {alert("Cannot reach the server"); return;})
   let Obj_DATA = await _Fetching.json();
   if(Obj_DATA.success == false) alert(`Failed to delete records`);
   else alert(`All selected records deleted`);
@@ -218,7 +218,7 @@ async function Update() {
   method: 'POST',
   headers:{'Content-Type':'application/json'}, 
   body: JSON.stringify(Udate_List),};
-  let _Fetching = await fetch(`${SrvDmn}:3000/update`,option).catch(() => {alert("Cannot reach the server"); return;})
+  let _Fetching = await fetch(`${SrvDmn}:3000/rcd_update`,option).catch(() => {alert("Cannot reach the server"); return;})
   let Obj_DATA = await _Fetching.json();
   if(Obj_DATA.success == false) alert(`Failed to save records`);
   else alert(`All update records saved`);

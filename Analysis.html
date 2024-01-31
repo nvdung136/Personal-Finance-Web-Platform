@@ -75,10 +75,11 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
     <div class="w3-twothird">
       <div class="w3-third">
-          <button class="w3-button w3-left" style="min-width: 70%; text-align: left;" id="DCF_button">DCF analysis</button>
-          <button class="w3-button w3-left" style="min-width: 70%; text-align: left;">Dummy button</button>
+          <button class="w3-button w3-left f-button" style="min-width: 70%; text-align: left;" id="F_Btn_DCF">DCF analysis</button>
+          <button class="w3-button w3-left f-button" style="min-width: 70%; text-align: left;" id="F_Btn_VaR">Value at risk</button>
+          <button class="w3-button w3-left f-button" style="min-width: 70%; text-align: left;" id="F_Btn_CW">Cover Warrant</button>
       </div>
-      <div class="w3-third" id="DCF_menu" style="display:none;"> 
+      <div class="w3-third InMenu" id="_menu_DCF" style="display:none;"> 
         <div class="w3-left w3-leftbar" style="overflow-y: visible;">
           <div>
             <button class="w3-button w3-left">FCF forecast</button>
@@ -89,7 +90,42 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
           <div> 
             <button class="w3-button w3-left">Valuation</button>
           </div>
+          <div>
+            <button class="w3-button w3-left">
+              <select class="w3-select w3-light-grey">Risk free rate
+                <option>VND GOV bond</option>
+                <option>VND bond discounted</option>
+                <option>USD 3M T-bond</option>
+              </select>
+            </button>
+            <!-- The idea as the risk free rate estimation:
+              1, Use directly the latest VND gov bond
+              2, Use the 3-month USD treasury bond (not comply with the currency and the time horizon)
+              3, Use (1) but with the discount given in the look table for professor Aswath of NYU 
+              (the rate estimate by (3) can be go below into the negative region)
+            -->
+          </div>
       </div>
+      </div>
+      <div class="w3-third InMenu" id="_menu_VaR" style="display: none;">
+        <div class="w3-left w3-leftbar" style="overflow-y: visible;">
+          <div>
+            <button class="w3-button w3-left">Dashboard</button>
+          </div>
+          <div>
+            <button class="w3-button w3-left">DrawnDown</button>
+          </div>
+          <div> 
+            <button class="w3-button w3-left">Value at Risk</button>
+          </div>
+        </div>
+      </div>
+      <div class="w3-third InMenu" id="_menu_CW" style="display: none;">
+        <div class="w3-left w3-leftbar" style="overflow-y: visible;">
+          <div>
+            <button class="w3-button w3-left">CW spread</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -126,23 +162,55 @@ function w3_close() {
   overlayBg.style.display = "none";
 }
 
-  const b_DCF = document.getElementById('DCF_button')
-  const m_DCF = document.getElementById('DCF_menu')
+  const b_DCF = document.getElementById('F_Btn_DCF')
+  const m_DCF = document.getElementById('_menu_DCF')
   const SYM_in = document.getElementById('SYM_list')
+  const b_VaR = document.getElementById('F_Btn_VaR')
+  const m_VaR = document.getElementById('_menu_VaR')
+  const b_CW = document.getElementById('F_Btn_CW')
+  const m_CW = document.getElementById('_menu_CW')
+  const innerMenus = document.querySelectorAll('.InMenu')
+  const F_BtnS = document.querySelectorAll('.f-button')
 
+  // Hide all the menu 
+  function hideAllMenu_n_Button() {
+    innerMenus.forEach(Menu => {
+      Menu.style.display = 'none'
+    })
+    F_BtnS.forEach(Btn => {
+      Btn.style.textAlign = 'left'
+      Btn.classList.replace('w3-right','w3-left')
+    })  
+  }
   b_DCF.addEventListener('click', function() {
     if(m_DCF.style.display == 'none'){
+      hideAllMenu_n_Button()
       b_DCF.classList.replace('w3-left','w3-right')
-      b_DCF.textContent = "DCF analysis>"
       b_DCF.style.textAlign = "right"
-      m_DCF.style.display = 'block'     
+      m_DCF.style.display = 'block' 
+    } else {
+      hideAllMenu_n_Button()
     }
-    else{
-      b_DCF.classList.replace('w3-right','w3-left')
-      b_DCF.textContent = "DCF analysis"
-      b_DCF.style.textAlign = "left"
-      m_DCF.style.display = 'none'
+  })
+
+  b_VaR.addEventListener('click', function(){
+    if(m_VaR.style.display == 'none'){
+      hideAllMenu_n_Button()
+      b_VaR.classList.replace('w3-left','w3-right')
+      b_VaR.style.textAlign = "right"
+      m_VaR.style.display = 'block'
     }
+    else {hideAllMenu_n_Button()}     
+  })
+
+  b_CW.addEventListener('click', function(){
+    if(m_CW.style.display == 'none'){
+      hideAllMenu_n_Button()
+      b_CW.classList.replace('w3-left','w3-right')
+      b_CW.style.textAlign = "right"
+      m_CW.style.display = 'block'
+    }
+    else {hideAllMenu_n_Button()}     
   })
 </script>
 
