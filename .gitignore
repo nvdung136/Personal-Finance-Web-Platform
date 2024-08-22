@@ -3,4 +3,7 @@
 /js/invisible.vbs
 /js/node_modules/
 /js/app_inUse.js
+/DB/FrenchFIN.csv
 /DB/PersonalFinance_inUse.db
+/DB/Living_expense.xlsx
+/DB/Extract_database.csv
