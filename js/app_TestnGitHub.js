@@ -20,7 +20,7 @@ app.use((req, res, next) => {
   })
 
 //post new request
-app.post("/postNew",async (req,res) => {
+app.post("/rcd_postNew",async (req,res) => {
     const RecordData = req.body;
     try {
         for (let i = 0; i < RecordData.length;i++)
@@ -41,7 +41,7 @@ app.post("/postNew",async (req,res) => {
  });
 
  //post update request 
- app.post("/update", (req,res)=> {
+ app.post("/rcd_update", (req,res)=> {
     const updateData = req.body;
     var baseSQL = "UPDATE TransactionTable SET"
     try{
@@ -76,7 +76,7 @@ app.post("/postNew",async (req,res) => {
             }
  });
 
-app.post("/delete", (req,res) => {
+app.post("/rcd_delete", (req,res) => {
     const Del_list = req.body;
     try
     {
@@ -97,7 +97,7 @@ app.post("/delete", (req,res) => {
 });
 
 //get request
-app.get("/fetch/:period", async (req,res) => {
+app.get("/trnst_fetch/:period", async (req,res) => {
     fperiod = req.params.period;
     sql = [ `SELECT * FROM TransactionTable WHERE strftime('%Y-%m',Date) = '${fperiod}' ORDER by date(Date)`,
             `SELECT SUM(Amount) AS total FROM TransactionTable WHERE strftime('%Y-%m',Date) <= '${fperiod}'`,

@@ -1,0 +1,145 @@
+ID|Date|Amount|Purpose|Account|Categorized
+2758|2023-10-01|-22,5|Create Carte Visa|CIC|CK-
+2759|2023-10-07|22,5|Carte Visa refund|CIC|CK+
+2760|2023-10-07|20,0|Sim carte refund|CIC|null
+2761|2023-10-05|3000,0|Deposit Cash |CIC|null
+2762|2023-10-03|-19,65|Assurance Habitation|CIC|null
+2763|2023-10-05|-23,82|Bouygues Telecom|CIC|null
+2764|2023-10-07|1000,0|Available cash|Cash|null
+2765|2023-10-07|-100,0|Cash out |Cash|null
+2766|2023-10-12|-250,0|Rental payment October 2023|Cash|null
+2767|2023-10-13|-45,84|EDF sept and part of oct|CIC|null
+2768|2023-10-16|-24,54|EDF monthly subscribe|CIC|null
+2769|2023-10-17|50,0|EDF transaction adjustment (reimbursement)|Cash|CK+
+2770|2023-10-17|-50,0|EDF transaction adjustment (reimbursement)|CIC|CK-
+2771|2023-10-19|-29,7|Monthly Citura|CIC|null
+2772|2023-10-19|-50,0|Monthly Citura (for Tu) _ Cash withdraw + offset Carrefour (20,3)|CIC|CK-
+2773|2023-10-19|-26,9|Les 3 Brasseurs Reims (Dine out) |CIC|null
+2774|2023-10-20|-2,75|Cafe at school (5 times) |CIC|null
+2775|2023-10-23|-28,15|Carrefour (Weekly groceries) - offset from Tu (20,3)|CIC|null
+2776|2023-10-23|50,0|Tu reimbursement on Carrefour + Citura|Cash|CK+
+2777|2023-10-26|-18,46|EDF Octobre|CIC|null
+2778|2023-10-27|-1,1|Cafe at School|CIC|null
+2779|2023-10-28|-31,5|Carrefour|CIC|null
+2780|2023-10-28|-19,1|Dine-out|CIC|null
+2781|2023-10-28|70,0|Tu reimbursement (Carrefour 28/10 + EDF October)|Cash|CK+
+2782|2023-10-28|-70,0|Tu Part (Carrefour 28/10 + EDF October)|CIC|CK-
+2783|2023-10-30|-1,1|Cafe at school|CIC|null
+2784|2023-11-01|-1,12|Intermarche|CIC|null
+2785|2023-11-01|-20,0|Withdraw cash|Cash|null
+2786|2023-11-02|-5,9|Petrie Reims (Boulangerie)|CIC|null
+2787|2023-11-02|2,34|Assurance Habitation |CIC|null
+2788|2023-11-06|-14,84|Carrefour Reims|CIC|null
+2789|2023-11-06|-12,99|Bouygues Telecome|CIC|null
+2790|2023-11-06|-44,73|Carrefour Reims|CIC|null
+2791|2023-11-06|-0,55|Cafe at school|CIC|null
+2792|2023-11-06|-2,4|La Petrie|CIC|null
+2793|2023-11-05|-1,0|virement fee|CIC|null
+2794|2023-11-05|-10,0|Virement to Tu (cash retrait)|CIC|null
+2795|2023-11-07|-44,17|Free Telecom|CIC|null
+2796|2023-11-09|-141,0|Withdraw cash|CIC|CK-
+2797|2023-11-09|141,0|Cash receive|Cash|CK+
+2798|2023-11-14|-30,64|Carrefour|CIC|null
+2799|2023-11-14|85,2|Tu refund |Cash|CK+
+2800|2023-11-14|-85,2|Tu part|CIC|CK-
+2801|2023-11-09|-26,2|Pocket money |Cash|null
+2802|2023-11-01|-50,0|Vir for Tu |CIC|CK-
+2803|2023-11-01|50,0|Vir for Tu |Cash|CK-
+2804|2023-11-13|-2,7|Buy desert and spoon|CIC|null
+2805|2023-11-14|-12,5|le Diner|CIC|null
+2806|2023-11-14|-250,0|Rent Novembre|Cash|null
+2807|2023-11-17|-0,55|Cafe at school|CIC|null
+2809|2023-11-18|-250,0|Rent money of Tu|Cash|CK-
+2810|2023-11-18|250,0|Rent money of Tu|CIC|CK+
+2811|2023-11-20|-41,14|TIA market|CIC|null
+2812|2023-11-21|-16,94|Carrefour Mkt for gathering|CIC|null
+2813|2023-11-21|-38,5|EDF novembre|CIC|null
+2814|2023-11-24|-20,0|Cash out|Cash|null
+2815|2023-11-22|-29,7|Monthly transportation |CIC|null
+2816|2023-11-22|-0,55|Cafe at school|CIC|null
+2817|2023-11-23|-2,4|Boulangerie|CIC|null
+2818|2023-11-23|-7,5|L'istabul |CIC|null
+2819|2023-11-24|-1,1|Cafe at school|CIC|null
+2820|2023-11-27|-6,2|Carrefour for gathering|CIC|null
+2821|2023-11-27|-1,2|Boulangerie|CIC|null
+2822|2023-11-29|-1,1|Cafe at school|CIC|null
+2823|2023-11-30|-2,7|Vending machin|CIC|null
+2825|2023-12-01|-2,05|Cafe and vending machine|CIC|null
+2826|2023-12-04|-37,13|Carrefour |CIC|null
+2827|2023-12-04|-2,2|La Mie Creme boulangerie|CIC|null
+2828|2023-12-06|-10,0|Free Telecom|CIC|null
+2829|2023-12-06|-1,65|Cafe at school|CIC|null
+2830|2023-12-05|-12,99|Bouygues Telecom|CIC|null
+2831|2023-12-04|-2,9|Cafe at school|CIC|null
+2832|2023-12-04|-20,0|Decathlon new bag|CIC|null
+2833|2023-12-04|-1,5|Neoma cafeteria|CIC|null
+2834|2023-12-07|-30,0|Cash out |Cash|null
+2835|2023-12-09|-13,4|Transfer to c Huong|CIC|null
+2836|2023-12-11|-2,5|Breakfast in School|CIC|null
+2837|2023-12-11|-5,99|Achete le stylo|CIC|null
+2838|2023-12-11|-12,5|Lunch in Genki|CIC|null
+2839|2023-12-12|-9,8|Mc Donald|CIC|null
+2840|2023-12-13|-3,0|Breakfast at school|CIC|null
+2841|2023-12-13|-9,0|Drinking|CIC|null
+2843|2023-12-11|-1,1|Cafe at school|CIC|null
+2844|2023-12-11|-2,4|Boulangerie|CIC|null
+2845|2023-12-11|-2,45|Carefour |CIC|null
+2846|2023-12-08|-0,55|Cafe at school|CIC|null
+2848|2023-12-15|-0,55|Cafe at school|CIC|null
+2849|2023-12-20|-250,0|Monthly rent|CIC|null
+2850|2023-12-21|-36,5|EDF|CIC|null
+2851|2023-12-21|-29,7|Cintura|CIC|null
+2853|2023-12-20|-17,6|Dine out|CIC|null
+2854|2023-12-18|-2,2|Boulangerie|CIC|null
+2855|2023-12-18|-12,5|Hoang Van|CIC|null
+2856|2023-12-14|-18,73|Carrefour|CIC|null
+2857|2023-12-21|-275,0|Cash out - Tu refund|CIC|CK-
+2858|2023-12-21|275,0|Tu refund|Cash|CK+
+2859|2023-12-22|-10,77|Carrefour|CIC|null
+2860|2023-12-22|-50,15|Carrefour|CIC|null
+2861|2024-01-01|-25,0|Cash out|Cash|null
+2867|2024-01-02|-1,0|Bank fee to Phuong|CIC|null
+2868|2024-01-03|-9,88|Habitation Assurance|CIC|null
+2869|2024-01-03|-53,84|TIA market|CIC|null
+2870|2024-01-04|-12,99|Boygues Telecom|CIC|null
+2871|2024-01-05|-10,0|Free Telecom|CIC|null
+2872|2024-01-05|100,0|Cash deposit|CIC|CK+
+2873|2024-01-05|-100,0|Tu borrow for Paris trip|Cash|CK-
+2874|2024-01-08|-7,5|Kebap |CIC|null
+2875|2024-01-08|-2,2|La Mie Boulanger|CIC|null
+2876|2023-12-31|-2,1|Tenue de Compte (Bank fee)|CIC|null
+2877|2024-01-09|-8,62|Carrefour|CIC|null
+2878|2024-01-15|-2,7|NEOMA breakfast|CIC|null
+2879|2024-01-15|-47,92|Carrefour|CIC|null
+2880|2024-01-20|-6,0|5e Market|CIC|null
+2881|2024-01-09|-2,2|Breakfast at NEOMA|CIC|null
+2882|2024-01-11|-1,95|Carrefour|CIC|null
+2883|2024-01-13|-250,0|Loyer|CIC|null
+2884|2024-01-21|-30,0|Cash out|Cash|null
+2885|2024-01-15|-20,0|Cash out|Cash|null
+2886|2024-01-22|-4,09|Carrefour |CIC|null
+2887|2024-01-26|-2,2|NEOMA|CIC|null
+2888|2024-01-29|-9,5|Amorino|CIC|null
+2889|2024-01-29|-57,66|Carrefour|CIC|null
+2891|2024-01-23|-29,7|Cintura|CIC|null
+2892|2024-01-24|-36,5|EDF|CIC|null
+2893|2024-01-25|-7,5|Kebap|CIC|null
+2894|2024-01-25|200,0|Inflow|CIC|null
+2895|2024-01-29|-6,0|Mac Donald|CIC|null
+2902|2024-01-31|-2,1|Breakfast at NEOMA|CIC|null
+2903|2024-02-01|-0,54|Cafe at school|CIC|null
+2904|2024-02-02|-9,88|Assurance Habitation|CIC|null
+2905|2024-02-02|-30,0|Cash out|Cash|null
+2906|2024-02-05|-12,99|Bouygues telecom |CIC|null
+2907|2024-02-05|-8,09|Carrefour city |CIC|null
+2908|2024-02-06|-19,99|Free|CIC|null
+2911|2024-02-09|-12,8| Reims Carrefour Market|CIC|null
+2912|2024-02-12|-63,91|Carrefour for the week|CIC|null
+2913|2024-02-13|-5,95|Starbucks|CIC|null
+2914|2024-02-14|-2,2|Breakfast  at school|CIC|null
+2915|2024-02-14|-0,55|Cafe at school|CIC|null
+2916|2024-02-12|-0,55|Cafe at school|CIC|null
+2917|2024-02-12|-2,2|Breakfast at school|CIC|null
+2918|2024-02-12|-6,0|Mac Donald|CIC|null
+2919|2024-02-16|-50,0|Cash out|Cash|null
+2920|2024-02-15|-2,35|Le Bourget|CIC|null

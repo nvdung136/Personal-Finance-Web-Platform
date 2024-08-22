@@ -8,196 +8,207 @@
 <link rel="stylesheet" href="./css/googleapisFont.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="./css/loader_line.css">
+<link rel="stylesheet" href="./css/sort_table.css">
+
+<script src="./js/sub_js/sort_table.js" defer></script>
 <script src="./js/TransactionSection/CSV_parse.js" defer></script>
 <script src="./js/TransactionSection/TransactionSection.js" defer></script>
 
 <style>
-html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", "sans-serif"}
 </style>
 </head>
 <body onload="Fetch_data()" class="w3-light-grey">
 
-<!-- Top container -->
-<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
-  <span class="w3-bar-item w3-right">
-    <a href="./FirstPage.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-home"></i>  Home</a>
-  </span>
-</div>
-
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <div class="w3-container w3-row">
-    <div class="w3-col s4">
-      <img src="./img/anhThe.jpg" class="w3-circle w3-margin-right" style="width:46px">
-    </div>
-    <div class="w3-col s8 w3-bar">
-      <span>Welcome, <strong>VAN-DUNG</strong></span><br>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
-    </div>
+  <!-- Top container -->
+  <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+    <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+    <span class="w3-bar-item w3-right">
+      <a href="./FirstPage.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-home"></i>  Home</a>
+    </span>
   </div>
-  <hr>
-  <div class="w3-container">
-    <h5>Transaction</h5>
-  </div>
-  <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    <a href="./FirstPage.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home"></i>  Home</a>
-    <a href="./Credit.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye"></i>  Credit</a>
-    <a href="./Investment.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-share-alt"></i>  Investment</a>
-    <a href="./Analysis.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users"></i>  Analysis</a>
-  </div>
-</nav>
 
-
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-
-<!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
-
-  <!-- Header -->
-  <header class="w3-container" style="padding-top:22px">
-    <h5><b><i class="fa fa-comment w3-padding"></i>Transaction page</b></h5>
-  </header>
-  <div class="w3-row-padding w3-margin-bottom">
-    <!-- Summary pannel -->
-    <div class="w3-half">
-      <div class="w3-container w3-red w3-padding-16">
-        <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <div class="w3-center">
-            <h3 class="w3-hover-shadow" id="Remaining_Amt" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">--</h3>
-            <button class="w3-button w3-white" id="AmtRem_ByMth">Total</button>
-          </div>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Transactions</h4>
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+    <div class="w3-container w3-row">
+      <div class="w3-col s4">
+        <img src="./img/anhThe.jpg" class="w3-circle w3-margin-right" style="width:46px">
+      </div>
+      <div class="w3-col s8 w3-bar">
+        <span>Welcome, <strong>VAN-DUNG</strong></span><br>
+        <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+        <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+        <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
       </div>
     </div>
-    <div class="w3-third">
-      <table class='w3-table-all' style="width:fit-content; min-width: 50%;;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <tbody>
-        <tr>
-          <th style="text-align: right;">Inflow</th>
-          <td id="inFlow"></td>
-        </tr>
-        <tr>
-            <th style="text-align: right;">Spending</th>
-            <td id="outFlow"></td>
-        </tr>
-        <tr>
-          <th style="text-align: right;">Unsual</th>
-          <td id="Un_Usual"></td>
-        </tr>
-        <tr>
-          <th style="text-align: right;">T_CHECK</th>
-          <td id="C_CK"></td>
-        </tr>
-        </tbody>
-      </table>
+    <hr>
+    <div class="w3-container">
+      <h5>Transaction</h5>
     </div>
-  <hr>
-  <br>
+    <div class="w3-bar-block">
+      <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+      <a href="./FirstPage.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home"></i>  Home</a>
+      <a href="./Credit.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye"></i>  Credit</a>
+      <a href="./Investment.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-share-alt"></i>  Investment</a>
+      <a href="./Analysis.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users"></i>  Analysis</a>
+    </div>
+  </nav>
 
-  <!-- Transaction and function section -->
-  <div class="w3-container">
-    <!-- Header and query navigate input -->
-    <div class="w3-container w3-half"> 
-      <h4 class="w3-left">Transaction details</h4> 
-    </div>
-    <div class="w3-container w3-half" >
-      <input type="month" id="FPeriod" min="2023-05" onchange="ChangePeriod()"></input> 
-      <button class="w3-button w3-padding-16" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
-    </div>  
-    <!-- Records display div -->
-    <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
-      <table class="w3-table-all w3-light-grey w3-padding-16" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" id="Transac_TB">
-        <thead>    
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+    <!-- Header -->
+    <header class="w3-container" style="padding-top:22px">
+      <h5><b><i class="fa fa-comment w3-padding"></i>Transaction tracking</b></h5>
+    </header>
+
+    <div class="w3-row-padding w3-margin-bottom">
+      <!-- Summary pannel -->
+      <div class="w3-half">
+        <div class="w3-container w3-red w3-padding-16">
+          <div class="w3-left">
+            <i class="fa fa-comment w3-xxxlarge"></i>
+            <div class="w3-clear"></div>
+            <h4>Transactions</h4>
+          </div>
+          <div class="w3-right">
+            <div class="w3-center">
+              <h3 class="w3-hover-shadow" id="Remaining_Amt" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">--</h3>
+              <button class="w3-button w3-white" id="AmtRem_ByMth">Total</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w3-third" style="max-height: 130px;">
+        <table class='w3-table-all' style="width:fit-content; min-width: 50%;;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <tbody>
           <tr>
-            <th style="width:15%;min-width:107px">Date</th>
-            <th style="width:10%;min-width:72px">Amount</th>
-            <th style="width:57%">Transaction</th>
-            <th style="width:8%">Account</th>
-            <th style="width:7%;min-width:72px">C-Code</th>
-            <th style="width:3%;min-width:30px;"></th>
-            <!-- <th style="width:7%"></th> -->
+            <th style="text-align: right;">Inflow</th>
+            <td id="inFlow"></td>
+            <th style="text-align: right;">T_CHECK</th>
+            <td id="C_CK"></td>
           </tr>
-        </thead>
-        <tbody id = "tableContent">
-        </tbody>
-      </table>
+          <tr>
+              <th style="text-align: right;">Spending</th>
+              <td id="outFlow"></td>
+              <th style="text-align: right;">Unsual</th>
+              <td id="Un_Usual"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    <hr>
+    <br>
+
+    <!-- Transaction and function section -->
+    <div class="w3-container">
+      <!-- Header and query navigate input -->
+      <div class="w3-container w3-half"> 
+        <h4 class="w3-left"><strong>Records</strong></h4> 
+      </div>
+      <div class="w3-container w3-half" >
+        <button onclick="Change_FPrd('-1')"><</button>
+        <input type="month" id="FPeriod" min="2024-07" onchange="ChangePeriod()"></input>
+        <button onclick="Change_FPrd('+1')">></button>
+        <button class="w3-button" style="background-color: lightslategrey;" onclick="Fetch_data()">Fetch</button>
+      </div>  
+      <!-- Records display div -->
+      <div id="TBLFrame" style="overflow: auto; max-height: 400px; width: 100%;">
+        <table class="w3-table-all sortable w3-light-grey w3-padding-16" style=" font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" id="Transac_TB">
+          <thead>    
+            <tr style="position: sticky; top: 0;">
+              <th style="width:15%;min-width:107px"><button style="text-align: center;">Date</button></th>
+              <th class="num" style="width:10%;min-width:72px"><button style="text-align: right;">Amount</button></th>
+              <th style="width:54%;text-align:center;">Transaction</th>
+              <th style="width:8%;min-width:60px"><button style="text-align: center;">Account</button></th>
+              <th style="width:8%;min-width:60px"><button style="text-align: center;">C-Code</button></th>
+              <th style="width:5%;min-width:30px;"></th>
+              <!-- <th style="width:7%"></th> -->
+            </tr>
+          </thead>
+          <tbody id = "tableContent">
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-  <br><hr>
+    <br><hr>
 
-  <!-- New Transaction input field -->
-  <div class="w3-container" style="width: 100%;"> 
-    <!-- Header and mass input by csv file -->
-    <div>
-      <h4 class="w3-left">New transaction</h4>
-      <button class="w3-button w3-right w3-teal" onclick="CSV_input()">CSV</button>
+    <!-- New Transaction input field -->
+    <div class="w3-container" style="width: 100%;"> 
+      <!-- Header and mass input by csv file -->
+
+      x
+      <div>
+        <h4 class="w3-left">New transaction</h4>
+        <button class="w3-button w3-right w3-teal" onclick="CSV_input()">CSV</button>
+      </div>
+      <div class="w3-clear"></div>
+      <!--Input table section  -->
+      <div style="overflow: auto;">
+        <table class="w3-table-all">
+          <!-- Table header -->
+          <thead>
+            <tr>
+              <th style="width:15%">Date</th>
+              <th style="width:10% ">Amount</th>
+              <th style="width:60%">Transaction</th>
+              <th style="width:8%">Account</th>
+              <th style="width:7%">C-Code</th>
+            </tr>
+          </thead>
+          <!-- Input area -->
+          <tbody id = "input_Tb">
+            <tr>
+              <td>
+                <Input type="date" id="in_Date" min="2023-09-01"></Input>
+              </td>
+              <td>
+                <Input type="number" id="in_Amount"  style="width:100%;"></Input>
+              </td>
+              <td>
+                <Input type="text" id="in_Purpose" style="width:100%;"></Input>
+              </td>
+              <td>
+                <select name="account" title="account" id="in_Acc">
+                  <option value="CIC">CIC</option>
+                  <option value="Cash">Cash</option>
+                  <option value="TCB">TCB</option>
+                  <option value="BID">BID</option>
+                </select>
+              </td>
+              <td>
+                <select name="ccode" title="CCode" id="in_CCode">
+                  <option value="null">N/A</option>
+                  <option value="unsual">U_Spend</option>
+                  <option value="PB">PB</option>
+                  <option value="CK-">CK-</option>
+                  <option value="CK+">CK+</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>  
+        </table>
     </div>
-    <!--Input table section  -->
-    <table class="w3-table-all">
-      <!-- Table header -->
-      <thead>
-        <th style="width:15%">Date</th>
-        <th style="width:10% ">Amount</th>
-        <th style="width:60%">Transaction</th>
-        <th style="width:8%">Account</th>
-        <th style="width:7%">C-Code</th>
-      </thead>
-      <!-- Input area -->
-      <tbody id = "input_Tb">
-        <tr>
-          <td>
-            <Input type="date" id="in_Date" min="2023-09-01"></Input>
-          </td>
-          <td>
-            <Input type="number" id="in_Amount"  style="width:100%;"></Input>
-          </td>
-          <td>
-            <Input type="text" id="in_Purpose" style="width:100%;"></Input>
-          </td>
-          <td>
-            <select name="account" title="account" id="in_Acc">
-              <option value="CIC">CIC</option>
-              <option value="Cash">Cash</option>
-              <option value="TCB">TCB</option>
-              <option value="BID">BID</option>
-            </select>
-          </td>
-          <td>
-            <select name="ccode" title="CCode" id="in_CCode">
-              <option value="null">N/A</option>
-              <option value="unsual">U_Spend</option>
-              <option value="PB">PB</option>
-              <option value="CK-">CK-</option>
-              <option value="CK+">CK+</option>
-            </select>
-          </td>
-        </tr>
-      </tbody>  
-    </table>
-    <!-- Backend-API interact function -->
-    <div>
-      <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
-      <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
-      <button class="w3-button w3-orange w3-right" id="Delete_B" onclick="Delete_rec()"> Delete </button>
-    </div>  
+      <!-- Backend-API interact function -->
+      <div>
+        <button class="w3-button w3-indigo w3-right" id="Submit_B" onclick="SubmitLine()">Submit</button>
+        <button class="w3-button w3-green w3-right" id="Save_B" onclick="SaveNew()"> Save </button> 
+        <button class="w3-button w3-orange w3-right" id="Delete_B" onclick="Delete_rec()"> Delete </button>
+      </div>  
+    </div>
+    <hr>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="w3-container w3-padding-16 w3-dark-grey">
+      <h4>VAN-DUNG NGO</h4>
+      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </footer>
   </div>
-  <hr>
-
-  <!-- Footer -->
-  <footer class="w3-container w3-padding-16 w3-dark-grey">
-    <h4>VAN-DUNG NGO</h4>
-    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-  </footer>
-
   <!-- End page content -->
-</div>
 </body>
 </html>

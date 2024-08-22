@@ -20,7 +20,7 @@ var Del_list =[];
 var OutFlow = 0;
 var InFlow = 0;
 var CK_check = 0;
-var Un_usual = 0;
+var Dis_val = 0;
 var Fet_DATA_obj = {};
 var FPeriod = document.getElementById("FPeriod").value;
 var Rmder_Amount = {month: 0,total: 0}
@@ -139,6 +139,8 @@ async function Fetch_data() {
       Fet_DATA_obj = objectData.data;
       OutFlow = 0;
       InFlow = 0;
+      CK_check = 0;
+      Dis_val = 0;
       Rmder_Amount.month = objectData.month;
       Rmder_Amount.total = objectData.total;
       T_Acc_Rmder = objectData.T_acc;
@@ -165,6 +167,7 @@ async function Fetch_data() {
   document.getElementById('outFlow').textContent = FORMATER.format(OutFlow);
   document.getElementById('inFlow').textContent = FORMATER.format(InFlow);
   document.getElementById("C_CK").textContent = (CK_check == 0) ? "TRUE" : "FALSE";
+  alert(`Total distribution ${FORMATER.format(Dis_val)}`)
   
   //Scroll the display table to the end
   document.getElementById("TBLFrame").scrollTo(0,TBLContain.offsetHeight);
@@ -255,11 +258,11 @@ function SubmitLine() {
   }
   ThisList = {date,amount,purpose,account,categorized};
   N_row.classList.add('w3-indigo')
-  let Submiting =`<td>${date}</td>
+  let Submiting =`<td style="text-align: center;">${date}</td>
     <td style="text-align: right;">${FORMATER.format(amount)}</td>
     <td>${purpose}</td>
-    <td>${account}</td>
-    <td>${categorized}</td>`;
+    <td style="text-align: center;">${account}</td>
+    <td style="text-align: center;">${categorized}</td>`;
   let Clk2Del = document.createElement('td')
   N_row.innerHTML += Submiting;
   N_row.appendChild(Clk2Del);
@@ -316,7 +319,7 @@ function TBLcell_click(RowID, Content){
     SelectCell.innerHTML = `<Input type="date" id="${idt}_UDate"></Input>`; 
     break;
     case ('Amt'):
-    SelectCell.innerHTML = `<Input type="number" id="${idt}_UDate"></Input>`;
+    SelectCell.innerHTML = `<Input type="text" id="${idt}_UDate"></Input>`;
     break;
     case ('For'):
     SelectCell.innerHTML = `<Input type="text" style="width:100%;" id="${idt}_UDate"></Input>`; 
@@ -340,7 +343,7 @@ function TBLcell_click(RowID, Content){
   Update_Ele.focus();
   // Update to the update list upon on of focus
   Update_Ele.setAttribute('onfocusout',`Udate_Row(${RowID},'${Content}','${DefaultVal}')`);
-  return;
+  Update_Ele.addEventListener("keypress", function(event) {if (event.key === "Enter") Udate_Row(RowID,Content,DefaultVal);});
 }
 
 // Once modified - the data of the row will be updated 
@@ -351,8 +354,12 @@ function Udate_Row(ID, Content, DefaultVal){
   const idt = `${Content}_${ID}`;
   // Get the cell div and update its value
   const SelectCell = document.getElementById(idt);
+  if( Content == 'Amt')  {
+    try {let Cal = eval(Update_Ele.value)}
+    catch {alert('Wrong format'); Update_Ele.value = DefaultVal}
+  }
   const NewVal = Update_Ele.value;
-  SelectCell.innerHTML = (Content == 'Amt') ? FORMATER.format(Update_Ele.value) : Update_Ele.value;
+  SelectCell.innerHTML = (Content == 'Amt') ? FORMATER.format(eval(Update_Ele.value)) : Update_Ele.value;
 
   //If no changes compare to the previous value then return
   if (DefaultVal == NewVal) return;
@@ -393,16 +400,41 @@ function daysInMonth (month, year) {
     return new Date(year, month, 0).getDate();
 }
 
+function Change_FPrd(n){
+  var C_Prd = FPeriod.split('-');
+  C_Prd[1] = eval(`${C_Prd[1]} ${n}`);
+  switch (true){
+    case (C_Prd[1]==0):
+      C_Prd[1] = 12;
+      C_Prd[0] = eval(C_Prd[0]-1);
+      FPeriod = `${C_Prd[0]}-${C_Prd[1]}`;
+      break;
+    case (C_Prd[1]<10):
+      FPeriod = `${C_Prd[0]}-0${C_Prd[1]}`;
+      break;
+    case (C_Prd[1]==13):
+      C_Prd[1] = 1;
+      C_Prd[0] = Number(C_Prd[0])+1;
+      FPeriod = `${C_Prd[0]}-0${C_Prd[1]}`;
+      break;
+    default:
+      FPeriod = `${C_Prd[0]}-${C_Prd[1]}`;
+      break;
+  }
+  document.getElementById("FPeriod").value = FPeriod;
+  ChangePeriod()
+  Fetch_data()
+}
 // Adding Element Data to records display table 
 function Add_row(Obj_DATA){
   Categorized(Obj_DATA)
   let Row_DATA;
   Row_DATA = `<tr id="Row_${Obj_DATA.ID}">
-  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Date')"><div class="row_data"  id="Date_${Obj_DATA.ID}">${Obj_DATA.Date}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Date')"><div class="row_data" style="text-align:center"  id="Date_${Obj_DATA.ID}">${Obj_DATA.Date}</div></td>
   <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Amt')"><div class="row_data" style="text-align:right"  id="Amt_${Obj_DATA.ID}">${FORMATER.format(Obj_DATA.Amount)}</div></td>
-  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'For')"><div class="row_data" id="For_${Obj_DATA.ID}">${Obj_DATA.Purpose}</div></td>
-  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Acc')"><div class="row_data" id="Acc_${Obj_DATA.ID}">${Obj_DATA.Account}</div></td>
-  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'CCode')"><div class="row_data" id="CCode_${Obj_DATA.ID}">${Obj_DATA.Categorized}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'For')"><div class="row_data" style="text-align:left"  id="For_${Obj_DATA.ID}">${Obj_DATA.Purpose}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'Acc')"><div class="row_data" style="text-align:center"  id="Acc_${Obj_DATA.ID}">${Obj_DATA.Account}</div></td>
+  <td ondblclick="TBLcell_click(${Obj_DATA.ID},'CCode')"><div class="row_data" style="text-align:center"  id="CCode_${Obj_DATA.ID}">${Obj_DATA.Categorized}</div></td>
   <td ondblclick="Delete_CheckB(${Obj_DATA.ID})"><div id="Del_${Obj_DATA.ID}"></div></td>
   </tr>`
   return Row_DATA;
@@ -415,5 +447,10 @@ function Categorized(Obj_DATA){
     CK_check += Obj_DATA.Amount;
     return
   }
+  if (Obj_DATA.Categorized.includes('PB',0)) 
+    {
+      Dis_val += Obj_DATA.Amount;
+      return
+    }
   if(Obj_DATA.Amount<0) {OutFlow += Obj_DATA.Amount;} else {InFlow += Obj_DATA.Amount;}
 }
