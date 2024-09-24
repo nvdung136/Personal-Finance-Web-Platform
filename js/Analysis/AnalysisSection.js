@@ -115,7 +115,7 @@ switch(obj_Data.status) {
     }
 }
 }
-
+// Do this function still in use ?
 async function TCK_Fetch() {
     FNC_name.innerText = 'Trading data'
     var TCK_data =[]
@@ -145,8 +145,6 @@ async function TCK_Fetch() {
                 }
                 Chart_ObjData.push(object)
             });
-            if(ChartArea.querySelector("svg") !== null){ChartArea.querySelector("svg").remove()}
-            Chart(Chart_ObjData)
             break;
         };
         case 300:{

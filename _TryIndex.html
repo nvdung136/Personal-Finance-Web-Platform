@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Highstock Example</title>
+
+		<style type="text/css">
+#container {
+    height: 720px;
+    min-width: 310px;
+}
+		</style>
+	</head>
+	<body>
+
+<script src="./code/highstock.js"></script>
+<script src="./code/modules/exporting.js"></script>
+<script src="./code/modules/export-data.js"></script>
+<script src="./code/modules/accessibility.js"></script>
+<div style="width: 100%; min-width: 200px;"><input style="margin-left: 40%; background-color: beige;" type="text" id="Tbl_NAME"></input></div>
+<div id="container"></div>
+
+
+<script type="text/javascript">
+    const table_name = document.getElementById("Tbl_NAME")
+
+    document.getElementById("Tbl_NAME").addEventListener("keypress", 
+    async (event) => {
+        if(event.key !== "Enter") {return}
+        const SrvDmn = (window.location.hostname != '') ? `http://${window.location.hostname}` : 'http://localhost';
+        const portNO = 3000;
+        const url = `${SrvDmn}:${portNO}/highcharts/${table_name.value}`; 
+        const data = await fetch(url).then(response => response.json()).catch(error => {alert(`Cannot load: ${error}`)});
+        const convertedData = data.data.map(item => Object.values(item));
+        var CLS_array = []
+        var DD_array = []
+        console.log(convertedData);
+
+        convertedData.forEach(element => {
+            CLS_array.push([element[0],element[1]])
+            DD_array.push([element[0],element[2]])
+        });
+        console.log(CLS_array)
+        console.log(DD_array)
+
+        // Create the chart
+        Highcharts.stockChart('container', {
+            rangeSelector: {
+                selected: 1
+            },
+
+            title: {
+                text: `${table_name.value}`
+            },
+
+            yAxis: [{
+                height: '60%'
+            }, {
+                top: '60%',
+                height: '40%',
+                plotBands: [{
+                    color: '#FAF0E6',
+                    from: -100,
+                    to: 0
+                }]
+            }],
+            plotOptions: {
+                series: {
+                    showInLegend: true,
+                    accessibility: {
+                        exposeAsGroupOnly: true
+                    }
+                }
+            },
+            series: [{
+                name: 'Price',
+                data: CLS_array,
+                tooltip: {
+                    valueDecimals: 2
+                },
+                yAxis: 0
+            }, {
+                name: 'Drawdown',
+                data: DD_array,
+                tooltip: {
+                    valueDecimals: 2
+                },
+                yAxis: 1
+            }]
+        });
+    });
+		</script>
+	</body>
+</html>
