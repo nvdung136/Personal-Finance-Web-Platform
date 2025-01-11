@@ -303,7 +303,7 @@ function Add_row_WL(Obj_DATA,DATA_des){
     let Row_DATA
     // function to process other information from data
     var Prcsed_DATA = CW_data_process(Obj_DATA,DATA_des)
-    Row_DATA = `<tr id="${Obj_DATA.Ticker}_WL">
+    Row_DATA = `<tr id="${Obj_DATA.Ticker}_WL" onmouseenter="Tooltip_show('${Obj_DATA.Ticker}_WL')" >
     <td ondblclick="WL_del('${Obj_DATA.Ticker}')"">${Obj_DATA.Ticker}</td>
     <td style="text-align: center">${Prcsed_DATA[1]}</td>
     <td style="text-align: right">${Obj_DATA.Price.toLocaleString('en-US')}</td>
@@ -329,6 +329,42 @@ async function WL_del(TCK){
 
 function Auto_WL_Update(){
     
+}
+
+function Tooltip_show(id_){
+    let width = 250
+    const parent_Ele = document.getElementById(id_) 
+    parent_Ele.style.borderColor = 'Teal';
+    parent_Ele.style.borderWidth = '3px';
+    const Pos = parent_Ele.getBoundingClientRect();
+    const Tooltip = document.createElement('div')
+    const style = {
+        position: 'absolute',
+        width: `250px`,
+        top: `${Math.ceil(Pos.top)}px`,
+        left: `${Math.ceil(Pos.left - width)}px`,
+        opacity: 0.95, 
+        border  : '3px solid teal',
+        backgroundColor: 'darkgrey',
+        zIndex:'5',
+        color: 'white',
+    }
+    Tooltip.id = `Tooltip_${id_}`;
+    for (const property in style) {
+        Tooltip.style[property] = style[property];
+        }
+    const Greeks_TBL = `<table class = 'w3-table'>
+        <tr><th>Delta</th><td> DATA 1</td></tr>
+        <tr><th>Gamma</th><td>Data 1</td></tr>
+        <tr><th>Vega</th><td>Data 1</td></tr></table>`;
+    Tooltip.innerHTML += Greeks_TBL
+    document.body.appendChild(Tooltip)
+    // Create a text area that go beside the row 
+    parent_Ele.addEventListener("mouseleave", () => {
+        parent_Ele.style.borderColor = '';
+        parent_Ele.style.borderWidth = '';
+        if(Tooltip.parentNode !== null) document.body.removeChild(Tooltip);
+    })
 }
 
 
@@ -374,7 +410,8 @@ function daysBetween(dateString1) {
 
 function blackScholes(K,days,r,Des_DATA) {
     // Change sigma (represent in %) to 0.0x
-    const sigma = Des_DATA.STD_2000*0.01
+    const SQRT252 = Math.sqrt(252)
+    const sigma = SQRT252*Des_DATA.STD_2000/100
     // Change S0 to represent as XX000
     const S0 = days > 20 ? Des_DATA.Spot_PRC*1000 : (Des_DATA.AVG_4*4+Des_DATA.Spot_PRC)*200;
     const t = days/365
@@ -383,19 +420,10 @@ function blackScholes(K,days,r,Des_DATA) {
     const d1 = (Math.log(S0 / K) + (r + sigma * sigma / 2) * t) / (sigma * Math.sqrt(t));
     const d2 = d1 - sigma * Math.sqrt(t);
   
-    // Define helper functions for cumulative distribution function (CDF) of normal distribution
-    const ndf = (x) => {
-      let z = Math.abs(x);
-      let t = 1 / (1 + 0.5 * Math.abs(z));
-      let r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + 
-        t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + 
-        t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + 
-        t * (-0.82215223 + t * 0.17087277)))))))));
-      return (1.0 + (x >= 0 ? r : -r));
-    };
-  
+    const NDF_d1 = jStat.normal.cdf(d1,0,1)
+    const NDF_d2 = jStat.normal.cdf(d2,0,1)
     // Calculate option price using the Black-Scholes formula
     let optionPrice;
-    optionPrice = S0 * ndf(d1) - K * Math.exp(-r * t) * ndf(d2);
+    optionPrice = S0 * NDF_d1 - K * Math.exp(-r * t) * NDF_d2;
     return optionPrice;
 }
